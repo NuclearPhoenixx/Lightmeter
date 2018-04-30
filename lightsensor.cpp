@@ -43,7 +43,8 @@ void TSL2591::displaySensorDetails()
 void TSL2591::configureSensor(unsigned int gain, unsigned int timing)
 {
   // You can change the gain on the fly, to adapt to brighter/dimmer light situations
-  switch(gain) {
+  switch(gain)
+  {
     case 0: tsl.setGain(TSL2591_GAIN_LOW); // 1x gain (bright light)
     case 1: tsl.setGain(TSL2591_GAIN_MED); // 25x gain
     default: tsl.setGain(TSL2591_GAIN_HIGH); // 428x gain
@@ -51,7 +52,8 @@ void TSL2591::configureSensor(unsigned int gain, unsigned int timing)
   
   // Changing the integration time gives you a longer time over which to sense light
   // longer timelines are slower, but are good in very low light situtations!
-  switch(timing) {
+  switch(timing)
+  {
     case 0: tsl.setTiming(TSL2591_INTEGRATIONTIME_100MS); //shortest integration time (bright light)
     case 1: tsl.setTiming(TSL2591_INTEGRATIONTIME_200MS);
     case 2: tsl.setTiming(TSL2591_INTEGRATIONTIME_300MS);
@@ -71,7 +73,8 @@ double TSL2591::simpleRead(unsigned int spectrum)
   // This can take 100-600 milliseconds! Uncomment whichever of the following you want to read
   uint16_t x;
   
-  switch(spectrum) {
+  switch(spectrum)
+  {
     case 0: x = tsl.getLuminosity(TSL2591_VISIBLE); //perform measurement of visible spectrum
     case 1: x = tsl.getLuminosity(TSL2591_INFRARED); //perform measurement of infrared spectrum
     default: x = tsl.getLuminosity(TSL2591_FULLSPECTRUM); //default measurement is full spectrum
@@ -90,7 +93,8 @@ double TSL2591::advancedRead(unsigned int spectrum)
   uint16_t ir = lum >> 16;
   uint16_t full = lum & 0xFFFF;
   
-  switch(spectrum) {
+  switch(spectrum)
+  {
     case 0: return ir; //infrared
     case 1: return full; //full spectrum
     case 3: return full - ir; //visible spectrum

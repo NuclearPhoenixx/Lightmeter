@@ -4,7 +4,6 @@
   TODO:
   * Check filesize and create another if size > filesystem max file size.
   * Sleep Mode/Standby between data logging.
-  * LED feedback for errors and stuff.
   
 */
 
@@ -14,43 +13,111 @@
 #include "rtc.h"
 #include "lightsensor.h"
 
-TSL2591 lightsensor = TSL2591(0, 0);
+#define _VERSION 1.1 //firmware version
+
+/* USER CONFIG */
+const int SD_PIN = 4; //pin connected to the chip select line of the SD card
+const String FILENAME = "data.json"; //filename for the data file
+/* USER CONFIG */
+
+TSL2591 lightsensor = TSL2591(0, 0); //create the objects for my classes
 RTC_DS3231 rtc = RTC_DS3231();
 
-const int SD_PIN = 4; //pin connected to the chip select line of the SD card
-const String FILENAME = "light_data.json"; //filename for the data file
+/* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
+void signal_led(unsigned int num = 0)
+{
+  unsigned int flashes, interval;
+  
+  switch(num)
+  {
+    case 0: //OK
+      flashes = 2;
+      interval = 200;
+    case 1: //NO LIGHTSENSOR
+      flashes = 3;
+      interval = 300;
+    case 2: //NO SD CARD
+      flashes = 4;
+      interval = 300;
+    case 3: //FILE ERROR
+      flashes = 5;
+      interval = 300;
+    default: //OTHER MISC ERROR
+      flashes = 6;
+      interval = 300;
+  }
+
+  for(unsigned int x = 0; x < flashes; x++)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(interval);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+  delay(800); //800ms delay after a LED signal to mark a distinct end to the flash
+}
 
 /* ARDUINO SETUP FUNCTION */
-void setup() {
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
 
-  /* WAIT FOR SERIAL; DEBUGGING ONLY */
+  // FIRMWARE LED FLASH
+  unsigned int major = (int)_VERSION;
+  unsigned int minor = _VERSION - (float)major * 10.0;
+  
+  for(unsigned int x = 0; x < major; x++) //flash major version
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+  
+  delay(500); //500ms delay between the stages
+  
+  for(unsigned int x = 0; x < minor; x++) //flash minor version
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+
+  /* WAIT FOR SERIAL; DEBUGGING ONLY
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  while (!Serial) { //wait for serial port to connect. Needed for native USB port only
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(800);
+    digitalWrite(LED_BUILTIN, LOW);
+  } */
 
-  /* INIT TSL2591 IF PRESENT */
-  Serial.print("Initializing the TSL2591.");
-  if (!lightsensor.begin()) {
-    Serial.println("No lightsensor found! Please restart!");
-    while(true); //don't do anything anymore
+  // INIT TSL2591 IF PRESENT
+  if (!lightsensor.begin())
+  {
+    while(1)
+    {
+      signal_led(1); //don't do anything anymore, only drop error
+    }
   }
-  Serial.print("TSL2591 initialized.");
+  
+  signal_led(0); //successfull
 
-  /* INIT SD CARD IF PRESENT */
-  Serial.print("Initializing SD card...");
-  if (!SD.begin(SD_PIN)) {
-    Serial.println("Card failed, or not present");
-    while(true); //don't do anything anymore
+  // INIT SD CARD IF PRESENT
+  if (!SD.begin(SD_PIN))
+  {
+    while(1)
+    {
+      signal_led(2); //don't do anything anymore, only drop error
+    }
   }
-  Serial.println("SD Card initialized.");
+  
+  signal_led(0); //successfull
 
   // Display some basic information on this sensor
   lightsensor.displaySensorDetails();
 }
 
 /* MAIN LOOP */
-void loop() {
+void loop()
+{
   //FOR LIGHTSENSOR TESTING
   unsigned int a = lightsensor.simpleRead();
   unsigned int b = lightsensor.advancedRead();
@@ -69,19 +136,14 @@ void loop() {
   File dataFile = SD.open(FILENAME, FILE_WRITE);
   
   //if the file is available, write the data to it
-  if (dataFile) {
+  if (dataFile)
+  {
     data.printTo(dataFile);
     dataFile.close();
   }
-  else //if the file is not available, print an error message.
+  else //if the file is not available, show an error
   {
-    Serial.println("Error opening " + FILENAME + "!");
+    signal_led(3);
   }
-}
-
-/* ERROR LED FUNCTION */
-void error_led(unsigned int errnum = 0)
-{
-  //nothing yet
 }
 
