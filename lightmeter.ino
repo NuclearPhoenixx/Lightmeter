@@ -3,24 +3,25 @@
 #include "rtc.h"
 #include "lightsensor.h"
 
-lightsensor lightsensor(3);
-rtc rtc(6);
+TSL2591 lightsensor = TSL2591(0, 0);
+RTC_DS3231 rtc = RTC_DS3231();
 
 /* SETUP ONLY */
 void setup() {
-  /* Display some basic information on this sensor */
-  lightsensor.displaySensorDetails();
   
-  /* Configure the sensor */
-  lightsensor.configureSensor();
+  lightsensor.begin(); //init the lightsensor lib
+  
+  lightsensor.displaySensorDetails(); // Display some basic information on this sensor
+  //lightsensor.configureSensor(); // Configure the sensor; this is already done in begin()
 
 }
 
 /* MAIN LOOP */
 void loop() { 
   
-  lightsensor.advancedRead();
-
-  Serial.println(rtc.get_unix_time());
+  int a = lightsensor.simpleRead();
+  int b = lightsensor.advancedRead();
+  int c = lightsensor.unifiedSensorAPIRead();
+  int d = rtc.get_unix_time();
   
 }

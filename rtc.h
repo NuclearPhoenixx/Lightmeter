@@ -3,17 +3,21 @@
 #ifndef rtc_h
 #define rtc_h
 
-class rtc
+class RTC_DS3231
 {
-
   public:
-    rtc(int addr); //setup function
+    RTC_DS3231(); //def constructor
   
-	  unsigned int get_unix_time();
-   
-  private:
-    int _addr;
-
+    unsigned long get_unix_time();
+    
+    float getTemperature();
+    void setA1Time(char A1Day, char A1Hour, char A1Minute, char A1Second, char AlarmBits, bool A1Dy, bool A1h12, bool A1PM);
+    void setA2Time(char A2Day, char A2Hour, char A2Minute, char AlarmBits, bool A2Dy, bool A2h12, bool A2PM);
+    void turnOnAlarm(char Alarm);
+    void turnOffAlarm(char Alarm);
+    bool checkAlarmEnabled(char Alarm);
+    bool checkIfAlarm(char Alarm);
+    
 };
 
 #endif
