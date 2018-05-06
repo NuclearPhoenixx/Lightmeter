@@ -2,12 +2,11 @@
   DIY Kuffner-Sternwarte Lightmeter
 
   TODO:
-  * Check if SD Card is full.
+  * Check if SD Card space is full.
   * Sleep Mode/Standby between data logging.
   * Detect when the clock battery is low.
-  * Detect when my own lipo battery is low.
-  * Use C datatypes?
-  
+  * Use C datatypes.
+  * Use TSL2591 user selected sleep mode.
 */
 
 #include <SPI.h> //SD Card
