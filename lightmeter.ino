@@ -90,14 +90,6 @@ void setup()
     digitalWrite(LED_BUILTIN, LOW);
   }
 
-  /* WAIT FOR SERIAL; DEBUGGING ONLY
-  Serial.begin(9600);
-  while (!Serial) { //wait for serial port to connect. Needed for native USB port only
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(800);
-    digitalWrite(LED_BUILTIN, LOW);
-  } */
-
   // INIT TSL2591 IF PRESENT
   if (!lightsensor.begin())
   {
