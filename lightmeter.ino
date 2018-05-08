@@ -21,8 +21,8 @@
 
 /* BEGIN USER CONFIG */
 const unsigned int SD_PIN = 4; //pin connected to the chip select line of the SD card
-const String FILE_NAME = "data"; //filename for the data file, >8 chars
-const String FILE_EXTENSION = ".txt"; //file extension for the data file, <3 chars
+const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
+const String FILE_EXTENSION = ".txt"; //file extension for the data file; 3 chars or less!
 const unsigned long MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
 const unsigned int M_INTERVAL = 1000; //measurement interval for data logging, in ms
 /* END USER CONFIG */
