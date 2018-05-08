@@ -66,5 +66,5 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Power Consumption | 10 mA max + logging hardware | 30 mA  max|
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi | uSD Card |
 | Data Destination | Logging hardware and drivers | uSD Card |
-| Data Rates (1 measurement/sec) | 3 MB/day | - |
+| Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
 | Price | ~100 EUR | ~50 EUR |
