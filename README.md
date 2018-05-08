@@ -61,6 +61,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
 | Lux Range | 500 uLux - 200,000 Lux | 188 uLux - 88,000 Lux |
+| Resolution | 50 - 100 uLux | 1 uLux |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
