@@ -1,7 +1,5 @@
 # Lightmeter
 
-**This is still in heavy development!**
-
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
 This instrument is based on a micro-controller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to program & maintain. As long as there is power and space on the SD Card the board autonomously measures the current light levels in lux and saves them together with the time from an ultra-precise RTC to a file on the SD Card in easy-to-work-with JSON format. No other requirements.
@@ -65,7 +63,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
-| Power Consumption | ~10 mA + logging hardware | ~31 mA |
+| Power Consumption | 10 mA max + logging hardware | 30 mA  max|
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi | uSD Card |
 | Data Destination | Logging hardware and drivers | uSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | - |
