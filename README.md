@@ -43,7 +43,7 @@ Adafruit Feather:
 * Arbitrary time interval for measurements
 * FAT32 filesystem for uSD Card
 * Custom file name for the data log file(s)
-* Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "log1.json". This is used to not overflow the FAT32 file limit and to not crash any software because of a too big file
+* Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of a too big file
 * LED feedback about the status (errors, ...)
 
 ## Comparison
