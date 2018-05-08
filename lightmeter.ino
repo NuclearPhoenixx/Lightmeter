@@ -22,6 +22,7 @@ const unsigned int SD_PIN = 4; //pin connected to the chip select line of the SD
 const String FILE_NAME = "data"; //filename for the data file
 const String FILE_EXTENSION = ".json"; //file extension for the data file
 const unsigned int MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
+const unsigned int M_INTERVAL = 1000; //measurement interval for data logging, in ms
 /* USER CONFIG */
 
 
@@ -156,5 +157,6 @@ void loop()
   {
     signal_led(3);
   }
+  delay(M_INTERVAL); //sleep for the set time
 }
 
