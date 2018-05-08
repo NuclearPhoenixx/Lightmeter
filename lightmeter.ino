@@ -7,6 +7,7 @@
   * Detect when the clock battery is low.
   * Use C datatypes.
   * Use TSL2591 user selected sleep mode.
+  * Fix negative lux values.
 */
 
 #include <SPI.h> //SD Card
@@ -15,19 +16,19 @@
 #include "rtc.h"
 #include "lightsensor.h"
 
-#define _VERSION 1.1 //firmware version
+#define _MAJORV 1 //major firmware version
+#define _MINORV 2 //minor firmware version
 
-/* USER CONFIG */
+/* BEGIN USER CONFIG */
 const unsigned int SD_PIN = 4; //pin connected to the chip select line of the SD card
-const String FILE_NAME = "data"; //filename for the data file
-const String FILE_EXTENSION = ".json"; //file extension for the data file
-const unsigned int MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
+const String FILE_NAME = "data"; //filename for the data file, >8 chars
+const String FILE_EXTENSION = ".txt"; //file extension for the data file, <3 chars
+const unsigned long MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
 const unsigned int M_INTERVAL = 1000; //measurement interval for data logging, in ms
-/* USER CONFIG */
-
+/* END USER CONFIG */
 
 TSL2591 lightsensor = TSL2591(0, 0); //create the objects for my classes
-RTC_DS3231 rtc = RTC_DS3231();
+DS3231 rtc = DS3231();
 
 File dataFile; //global variable that will hold the data file
 unsigned int fileNum = 0; //global number of file
@@ -37,21 +38,27 @@ String filePath; //this will hold the file path globally
 void signal_led(unsigned int num = 0)
 {
   unsigned int flashes;
-  unsigned int interval = 300;
   
   switch(num)
   {
     case 0: //OK
       flashes = 1;
-      interval = 200;
+      break;
     case 1: //NO LIGHTSENSOR
       flashes = 2;
+      break;
     case 2: //NO SD CARD
       flashes = 3;
+      break;
     case 3: //FILE ERROR
       flashes = 4;
+      break;
     case 4: //SD FILESYSTEM ERROR
       flashes = 5;
+      break;
+    case 5: //NO RTC
+      flashes = 6;
+      break;
     default: //OTHER MISC ERROR
       flashes = 6;
   }
@@ -59,8 +66,9 @@ void signal_led(unsigned int num = 0)
   for(unsigned int x = 0; x < flashes; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(interval);
+    delay(200);
     digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
   }
   delay(800); //800ms delay after a LED signal to mark a distinct end to the flash
 }
@@ -69,76 +77,93 @@ void signal_led(unsigned int num = 0)
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
+  pinMode(13, OUTPUT); //sd card led
+
+  Serial.begin(9600); //begin serial (for debugging and rtc set)
 
   // FIRMWARE LED FLASH
-  unsigned int major = (int)_VERSION;
-  unsigned int minor = _VERSION - (float)major * 10.0;
-  
-  for(unsigned int x = 0; x < major; x++) //flash major version
+  for(unsigned int x = 0; x < _MAJORV; x++) //flash major version
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
     digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
   }
   
-  delay(500); //500ms delay between the stages
+  delay(400); //400ms delay between the stages
   
-  for(unsigned int x = 0; x < minor; x++) //flash minor version
+  for(unsigned int x = 0; x < _MINORV; x++) //flash minor version
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
     digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
   }
+  
+  delay(1500); //1.5s delay between coming errors and firmware flash
+
+  /* Display some basic information on this sensor
+  lightsensor.displaySensorDetails(); */
 
   // INIT TSL2591 IF PRESENT
-  if (!lightsensor.begin())
+  if(!lightsensor.begin())
   {
     while(1)
     {
-      signal_led(1); //don't do anything anymore, only drop error
+      signal_led(1);
     }
   }
   
   signal_led(0); //successfull
 
   // INIT SD CARD IF PRESENT
-  if (!SD.begin(SD_PIN))
+  if(!SD.begin(SD_PIN))
   {
     while(1)
     {
-      signal_led(2); //don't do anything anymore, only drop error
+      signal_led(2);
     }
   }
 
   signal_led(0); //successfull
 
+  //INIT RTC
+  if(!rtc.begin())
+  {
+    while(1)
+    {
+      signal_led(5);
+    }
+  }
+  
+  signal_led(0); //successfull
+
+  //SET RTC TIME IF NO TIME SET
+  if(rtc.lostPower())
+  {
+    rtc.setTime();
+  }
+
   //update filePath to point to file_name.file_extenion.
   filePath = FILE_NAME + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
-
-  /* Display some basic information on this sensor
-  lightsensor.displaySensorDetails(); */
 }
 
 /* MAIN LOOP */
 void loop()
 {
-  //FOR LIGHTSENSOR TESTING
-  unsigned int a = lightsensor.simpleRead();
-  unsigned int b = lightsensor.advancedRead();
-  unsigned int c = lightsensor.unifiedSensorAPIRead();
-  
   // new dynamic json buffer, let's just assume 20 bytes for now
   DynamicJsonBuffer jsonBuffer(20);
   
   // create new json object that will contain all the logged data
   JsonObject& data = jsonBuffer.createObject();
   
-  data["unixtime"] = rtc.get_unix_time();
-  data["lux"] = a;
+  data["unixtime"] = rtc.unixtime(); //input rtc time
+  data["lux"] = lightsensor.luxRead(); //input lux value
 
   //to-be/future size of file with the new data in bytes
   unsigned long future_size = dataFile.size() + data.measureLength();
+  
   //check if future_size is bigger than specified max size, if yes, write to new file
   if(future_size > MAX_FILESIZE)
   {
