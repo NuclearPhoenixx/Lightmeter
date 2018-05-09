@@ -3,6 +3,8 @@
 #ifndef rtc_h
 #define rtc_h
 
+#include <Arduino.h>
+
 class DS3231
 {
   public:
@@ -11,7 +13,7 @@ class DS3231
 
     bool lostPower();
     void setTime();
-    unsigned long unixtime();
+    uint32_t unixtime();
 };
 
 #endif

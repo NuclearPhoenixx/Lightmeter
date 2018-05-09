@@ -7,7 +7,7 @@
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); // pass in a number for the sensor identifier (for your use later)
 
 /* DEF CONSTRUCTOR */
-TSL2591::TSL2591(char gain, char timing)
+TSL2591::TSL2591(byte gain, byte timing)
 {
   _gain = gain;
   _timing = timing;

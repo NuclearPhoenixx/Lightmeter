@@ -8,7 +8,7 @@
 class TSL2591
 {
   public:
-    TSL2591(char gain, char timing); //def constructor
+    TSL2591(byte gain, byte timing); //def constructor
     bool begin(); //setup
   
     void displaySensorDetails();
@@ -19,8 +19,8 @@ class TSL2591
     float luxRead();
     
   private:
-    unsigned int _gain; //gain and timing for the first config
-    unsigned int _timing;
+    char _gain; //gain and timing for the first config
+    char _timing;
 };
 
 #endif

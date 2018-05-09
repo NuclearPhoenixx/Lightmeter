@@ -4,9 +4,9 @@
   TODO:
   * Check if SD Card space is full.
   * Sleep Mode/Standby between data logging.
-  * Detect when the clock battery is low.
-  * Use C datatypes.
+  * Detect when the clock battery is low and needs to be changed; check if unixtime < last time stored on EEPROM.
   * Fix negative lux values.
+  * Less flush; store stuff on EEPROM and if that's fully write everything on the SD card and flush
 */
 
 #include <SPI.h> //SD Card
@@ -16,27 +16,27 @@
 #include "lightsensor.h"
 
 #define _MAJORV 1 //major firmware version
-#define _MINORV 2 //minor firmware version
+#define _MINORV 3 //minor firmware version
 
 /* BEGIN USER CONFIG */
-const unsigned int SD_PIN = 4; //pin connected to the chip select line of the SD card
+const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = ".txt"; //file extension for the data file; 3 chars or less!
-const unsigned long MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const unsigned int M_INTERVAL = 1000; //measurement interval for data logging, in ms
+const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
+const uint16_t M_INTERVAL = 1000; //measurement interval for data logging, in ms
 /* END USER CONFIG */
 
 TSL2591 lightsensor = TSL2591(0, 0); //create the objects for my classes
 DS3231 rtc = DS3231();
 
 File dataFile; //global variable that will hold the data file
-unsigned int fileNum = 0; //global number of file
+uint8_t fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
 
 /* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
-void signal_led(unsigned int num = 0)
+void signal_led(char num = 0)
 {
-  unsigned int flashes;
+  byte flashes;
   
   switch(num)
   {
@@ -62,7 +62,7 @@ void signal_led(unsigned int num = 0)
       flashes = 6;
   }
 
-  for(unsigned int x = 0; x < flashes; x++)
+  for(byte x = 0; x < flashes; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
@@ -81,7 +81,7 @@ void setup()
   Serial.begin(9600); //begin serial (for debugging and rtc set)
 
   // FIRMWARE LED FLASH
-  for(unsigned int x = 0; x < _MAJORV; x++) //flash major version
+  for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
@@ -91,7 +91,7 @@ void setup()
   
   delay(400); //400ms delay between the stages
   
-  for(unsigned int x = 0; x < _MINORV; x++) //flash minor version
+  for(byte x = 0; x < _MINORV; x++) //flash minor version
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
@@ -161,7 +161,7 @@ void loop()
   data["lux"] = lightsensor.luxRead(); //input lux value
 
   //to-be/future size of file with the new data in bytes
-  unsigned long future_size = dataFile.size() + data.measureLength();
+  uint32_t future_size = dataFile.size() + data.measureLength();
   
   //check if future_size is bigger than specified max size, if yes, write to new file
   if(future_size > MAX_FILESIZE)

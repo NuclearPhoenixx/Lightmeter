@@ -24,10 +24,10 @@ bool DS3231::lostPower()
 
 void DS3231::setTime()
 {
-  return RTC_DS3231.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  RTC_DS3231.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
-unsigned long DS3231::unixtime()
+uint32_t DS3231::unixtime()
 {
   DateTime now = RTC_DS3231.now();
   return now.unixtime();
