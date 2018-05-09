@@ -4,12 +4,9 @@
   TODO:
   * Check if SD Card space is full.
   * Sleep Mode/Standby between data logging.
-  * Detect when the clock battery is low and needs to be changed; check if unixtime < last time stored on EEPROM.
   * Fix negative lux values.
   * Less flush; store stuff on EEPROM and if that's fully write everything on the SD card and flush
 */
-
-//#include <SPI.h> //SD Card
 #include <SD.h> //SD Card
 #include <EEPROM.h> //for EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
@@ -17,7 +14,7 @@
 #include "lightsensor.h"
 
 #define _MAJORV 1 //major firmware version
-#define _MINORV 3 //minor firmware version
+#define _MINORV 4 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
@@ -127,14 +124,27 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
+  uint32_t unixtime = rtc.unixtime(); //grab the current RTC timestamp
+  uint32_t eepromTime; //this will hold the saved RTC timestamp
+  EEPROM.get(0, eepromTime); //read from address location 0
+  
+  if(unixtime < eepromTime) //check if RTC didn't reset back to 2000-1-1
+  {
+    while(1)
+    {
+      signal_led(7);
+    }
+  }
+
+  EEPROM.put(0, unixtime); //update the latest time to EEPROM
   
   // new dynamic json buffer, let's just assume 20 bytes for now
-  DynamicJsonBuffer jsonBuffer(20);
+  DynamicJsonBuffer jsonBuffer(30);
   
   // create new json object that will contain all the logged data
   JsonObject& data = jsonBuffer.createObject();
   
-  data["unixtime"] = rtc.unixtime(); //input rtc time
+  data["unixtime"] = unixtime; //input rtc time
   data["lux"] = lightsensor.luxRead(); //input lux value
 
   //to-be/future size of file with the new data in bytes
