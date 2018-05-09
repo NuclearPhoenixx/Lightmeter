@@ -9,8 +9,9 @@
   * Less flush; store stuff on EEPROM and if that's fully write everything on the SD card and flush
 */
 
-#include <SPI.h> //SD Card
+//#include <SPI.h> //SD Card
 #include <SD.h> //SD Card
+#include <EEPROM.h> //for EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
 #include "rtc.h"
 #include "lightsensor.h"
@@ -34,34 +35,17 @@ uint8_t fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
 
 /* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
-void signal_led(char num = 0)
+void signal_led(byte flashes)
 {
-  byte flashes;
-  
-  switch(num)
-  {
-    case 0: //OK
-      flashes = 1;
-      break;
-    case 1: //NO LIGHTSENSOR
-      flashes = 2;
-      break;
-    case 2: //NO SD CARD
-      flashes = 3;
-      break;
-    case 3: //FILE WRITE ERROR
-      flashes = 4;
-      break;
-    case 4: //SD FILESYSTEM ERROR
-      flashes = 5;
-      break;
-    case 5: //NO RTC
-      flashes = 6;
-      break;
-    default: //OTHER MISC ERROR
-      flashes = 6;
-  }
-
+  /* ERROR/SIGNAL FLASHES:
+   *  1: NO LIGHTSENSOR
+   *  2: NO SD CARD
+   *  3: FILE WRITE ERROR
+   *  4: SD FILESYSTEM ERROR
+   *  5: NO RTC
+   *  6: OTHER MISC ERROR
+   *  7: RTC BATTERY DIED
+   */
   for(byte x = 0; x < flashes; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -69,7 +53,7 @@ void signal_led(char num = 0)
     digitalWrite(LED_BUILTIN, LOW);
     delay(200);
   }
-  delay(800); //800ms delay after a LED signal to mark a distinct end to the flash
+  delay(800); //800ms delay after a LED signal to mark a distinct end to the signal
 }
 
 /* ARDUINO SETUP FUNCTION */
@@ -77,8 +61,6 @@ void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
   pinMode(13, OUTPUT); //sd card led
-
-  Serial.begin(9600); //begin serial (for debugging and rtc set)
 
   // FIRMWARE LED FLASH
   for(byte x = 0; x < _MAJORV; x++) //flash major version
@@ -112,8 +94,6 @@ void setup()
       signal_led(1);
     }
   }
-  
-  signal_led(0); //successfull
 
   // INIT SD CARD IF PRESENT
   if(!SD.begin(SD_PIN))
@@ -124,8 +104,6 @@ void setup()
     }
   }
 
-  signal_led(0); //successfull
-
   //INIT RTC
   if(!rtc.begin())
   {
@@ -134,8 +112,6 @@ void setup()
       signal_led(5);
     }
   }
-  
-  signal_led(0); //successfull
 
   //SET RTC TIME IF NO TIME SET
   if(rtc.lostPower())
@@ -151,6 +127,7 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
+  
   // new dynamic json buffer, let's just assume 20 bytes for now
   DynamicJsonBuffer jsonBuffer(20);
   
