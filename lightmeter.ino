@@ -6,7 +6,6 @@
   * Sleep Mode/Standby between data logging.
   * Detect when the clock battery is low.
   * Use C datatypes.
-  * Use TSL2591 user selected sleep mode.
   * Fix negative lux values.
 */
 
@@ -50,7 +49,7 @@ void signal_led(unsigned int num = 0)
     case 2: //NO SD CARD
       flashes = 3;
       break;
-    case 3: //FILE ERROR
+    case 3: //FILE WRITE ERROR
       flashes = 4;
       break;
     case 4: //SD FILESYSTEM ERROR

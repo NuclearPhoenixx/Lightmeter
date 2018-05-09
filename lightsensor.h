@@ -8,14 +8,14 @@
 class TSL2591
 {
   public:
-    TSL2591(unsigned int gain, unsigned int timing); //def constructor
+    TSL2591(char gain, char timing); //def constructor
     bool begin(); //setup
   
     void displaySensorDetails();
-    bool configureSensor(unsigned int gain = -1, unsigned int timing = -1);
+    bool configureSensor(char gain = -1, char timing = -1);
   
-    uint16_t simpleRead(unsigned int spectrum = 0);
-    uint16_t advancedRead(unsigned int spectrum = 0);
+    uint16_t simpleRead(char spectrum = 0);
+    uint16_t advancedRead(char spectrum = 0);
     float luxRead();
     
   private:

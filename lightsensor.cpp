@@ -7,7 +7,7 @@
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); // pass in a number for the sensor identifier (for your use later)
 
 /* DEF CONSTRUCTOR */
-TSL2591::TSL2591(unsigned int gain, unsigned int timing)
+TSL2591::TSL2591(char gain, char timing)
 {
   _gain = gain;
   _timing = timing;
@@ -39,7 +39,7 @@ void TSL2591::displaySensorDetails()
 }
 
 /* Configure gain and integration time for the TSL2591 */
-bool TSL2591::configureSensor(unsigned int gain, unsigned int timing)
+bool TSL2591::configureSensor(char gain, char timing)
 {
   if(gain == -1) {gain = _gain;}
   if(timing == -1) {timing = _timing;}
@@ -85,7 +85,7 @@ bool TSL2591::configureSensor(unsigned int gain, unsigned int timing)
 }
 
 /* Perform a basic read on visible, full spectrum or infrared light (returns raw 16-bit ADC values) */
-uint16_t TSL2591::simpleRead(unsigned int spectrum)
+uint16_t TSL2591::simpleRead(char spectrum)
 {
   // Simple data read example. Just read the infrared, fullspecrtrum diode 
   // or 'visible' (difference between the two) channels.
@@ -107,7 +107,7 @@ uint16_t TSL2591::simpleRead(unsigned int spectrum)
 }
 
 /* Show how to read IR and Full Spectrum at once and convert to lux */
-uint16_t TSL2591::advancedRead(unsigned int spectrum)
+uint16_t TSL2591::advancedRead(char spectrum)
 {
   // More advanced data read example. Read 32 bits with top 16 bits IR, bottom 16 bits full spectrum
   // That way you can do whatever math and comparisons you want!
@@ -129,9 +129,12 @@ uint16_t TSL2591::advancedRead(unsigned int spectrum)
   }
 }
 
-/* Calculates the current visible Lux value */
+/* Calculates the current visible Lux value and then sends the sensor back to sleep */
 float TSL2591::luxRead()
 {
-  return tsl.calculateLux(tsl.getLuminosity(TSL2591_FULLSPECTRUM), tsl.getLuminosity(TSL2591_INFRARED));
+  tsl.enable(); //enable the TSL2591
+  float reading = tsl.calculateLux(tsl.getLuminosity(TSL2591_FULLSPECTRUM), tsl.getLuminosity(TSL2591_INFRARED));
+  tsl.disable(); //set the TSL2591 to power down mode
+  return reading;
 }
 
