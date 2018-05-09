@@ -59,6 +59,8 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
   pinMode(13, OUTPUT); //sd card led
 
+  delay(1000); //start delay
+  
   // FIRMWARE LED FLASH
   for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
@@ -68,7 +70,7 @@ void setup()
     delay(200);
   }
   
-  delay(400); //400ms delay between the stages
+  delay(350); //400ms delay between the stages
   
   for(byte x = 0; x < _MINORV; x++) //flash minor version
   {
@@ -78,7 +80,7 @@ void setup()
     delay(200);
   }
   
-  delay(1500); //1.5s delay between coming errors and firmware flash
+  delay(100); //1.5s delay between coming errors and firmware flash
 
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
@@ -146,7 +148,15 @@ void loop()
   
   data["unixtime"] = unixtime; //input rtc time
   data["lux"] = lightsensor.luxRead(); //input lux value
-
+  
+  /* TEST FOR NEXT UPDATE
+  EEPROM.put(10, data);
+  Serial.begin(9600);
+  JsonObject& a = jsonBuffer.createObject();
+  EEPROM.get(10, a);
+  a.printTo(Serial);
+  */
+  
   //to-be/future size of file with the new data in bytes
   uint32_t future_size = dataFile.size() + data.measureLength();
   
