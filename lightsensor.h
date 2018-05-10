@@ -13,9 +13,6 @@ class TSL2591
   
     void displaySensorDetails();
     bool configureSensor(char gain = -1, char timing = -1);
-  
-    uint16_t simpleRead(char spectrum = 0);
-    uint16_t advancedRead(char spectrum = 0);
     float luxRead();
     
   private:

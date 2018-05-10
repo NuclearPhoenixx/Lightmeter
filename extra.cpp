@@ -1,7 +1,6 @@
 /* This contains all the extra utility functions for the lightmeter */
 
 #include "extra.h" // include my header file
-
 #include <Adafruit_SleepyDog.h> //For power down sleep mode
 
 /* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */

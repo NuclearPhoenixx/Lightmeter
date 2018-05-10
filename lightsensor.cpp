@@ -1,7 +1,6 @@
 /* This contains all the functions for the TSL2591 light sensor */
 
 #include "lightsensor.h" // include my header file
-
 #include <Adafruit_TSL2591.h> //TSL2591 lib
 
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); // pass in a number for the sensor identifier (for your use later)
@@ -44,6 +43,9 @@ bool TSL2591::configureSensor(char gain, char timing)
   if(gain == -1) {gain = _gain;}
   if(timing == -1) {timing = _timing;}
 
+  _gain = gain; //Update private vars if the gain and timing get updated
+  _timing = timing;
+
   // You can change the gain on the fly, to adapt to brighter/dimmer light situations
   switch(gain)
   {
@@ -53,8 +55,11 @@ bool TSL2591::configureSensor(char gain, char timing)
     case 1:
       tsl.setGain(TSL2591_GAIN_MED); // 25x gain
       break;
-    default:
+    case 2:
       tsl.setGain(TSL2591_GAIN_HIGH); // 428x gain
+      break;
+    default:
+      tsl.setGain(TSL2591_GAIN_MAX); // 9876x gain
   }
   
   // Changing the integration time gives you a longer time over which to sense light
@@ -84,57 +89,18 @@ bool TSL2591::configureSensor(char gain, char timing)
   return true; //return true for now
 }
 
-/* Perform a basic read on visible, full spectrum or infrared light (returns raw 16-bit ADC values) */
-uint16_t TSL2591::simpleRead(char spectrum)
-{
-  // Simple data read example. Just read the infrared, fullspecrtrum diode 
-  // or 'visible' (difference between the two) channels.
-  // This can take 100-600 milliseconds! Uncomment whichever of the following you want to read
-  uint16_t ir = tsl.getLuminosity(TSL2591_INFRARED);
-  uint16_t full = tsl.getLuminosity(TSL2591_FULLSPECTRUM);
-  
-  switch(spectrum)
-  {
-    case 0:
-      return tsl.getLuminosity(TSL2591_VISIBLE); //perform measurement of visible spectrum
-      break;
-    case 1:
-      return ir; //perform measurement of infrared spectrum
-      break;
-    default:
-      return full; //default measurement is full spectrum
-  }
-}
-
-/* Show how to read IR and Full Spectrum at once and convert to lux */
-uint16_t TSL2591::advancedRead(char spectrum)
+/* Calculates the current visible Lux value and then sends the sensor back to sleep */
+float TSL2591::luxRead()
 {
   // More advanced data read example. Read 32 bits with top 16 bits IR, bottom 16 bits full spectrum
   // That way you can do whatever math and comparisons you want!
   uint32_t lum = tsl.getFullLuminosity();
-
-  uint16_t ir = lum >> 16;
-  uint16_t full = lum & 0xFFFF;
   
-  switch(spectrum)
-  {
-    case 0:
-      return full - ir; //visible spectrum
-      break;
-    case 1:
-      return ir; //infrared
-      break;
-    default:
-      return full; //full spectrum
-  }
-}
+  uint16_t full = lum & 0xFFFF;
+  uint16_t ir = lum >> 16;
+  
+  /* "full" values 0 and 65535 are invalid and thus gain should be changed */
 
-/* Calculates the current visible Lux value and then sends the sensor back to sleep */
-float TSL2591::luxRead()
-{
-  tsl.enable(); //enable the TSL2591
-  float reading = tsl.calculateLux(tsl.getLuminosity(TSL2591_FULLSPECTRUM), tsl.getLuminosity(TSL2591_INFRARED));
-  tsl.disable(); //set the TSL2591 to power down mode
-  return reading;
+  return tsl.calculateLux(full, ir);
 }
 

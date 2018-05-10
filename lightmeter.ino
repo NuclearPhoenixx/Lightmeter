@@ -24,7 +24,7 @@ const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB
 const uint16_t M_INTERVAL = 5000; //measurement interval for data logging, in ms
 /* END USER CONFIG */
 
-TSL2591 lightsensor = TSL2591(0, 0); //create the objects for my classes
+TSL2591 lightsensor = TSL2591(1, 2); //create the objects for my classes
 DS3231 rtc = DS3231();
 
 File dataFile; //global variable that will hold the data file
@@ -91,6 +91,7 @@ void setup()
   }
   
   extra::sleep(1000); //1000ms sleep delay between coming errors and firmware flash
+  // Serial.begin(9600); //DEBUGGING SERIAL
 }
 
 /* MAIN LOOP */

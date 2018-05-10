@@ -1,7 +1,6 @@
 /* This contains all the functions for the DS3231 real time clock */
 
 #include "rtc.h" // include my header file
-
 #include <RTClib.h> //DS3231 lib
 
 RTC_DS3231 RTC_DS3231;
