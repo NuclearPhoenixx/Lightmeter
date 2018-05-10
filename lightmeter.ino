@@ -5,7 +5,8 @@
   * Check if SD Card space is full.
   * Sleep Mode/Standby between data logging.
   * Fix negative lux values.
-  * Less flush; store stuff on EEPROM and if that's fully write everything on the SD card and flush
+  * Less flush?
+  * RTC time check fix so that it doesn't reset it to the sketch date if battery runs out.
 */
 #include <SD.h> //SD Card
 #include <EEPROM.h> //for EEPROM storage
@@ -14,7 +15,7 @@
 #include "lightsensor.h"
 
 #define _MAJORV 1 //major firmware version
-#define _MINORV 4 //minor firmware version
+#define _MINORV 5 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
@@ -130,15 +131,13 @@ void loop()
   uint32_t eepromTime; //this will hold the saved RTC timestamp
   EEPROM.get(0, eepromTime); //read from address location 0
   
-  if(unixtime < eepromTime) //check if RTC didn't reset back to 2000-1-1
+  if(unixtime < eepromTime) //check if RTC did reset back to 2000-1-1
   {
     while(1)
     {
       signal_led(7);
     }
   }
-
-  EEPROM.put(0, unixtime); //update the latest time to EEPROM
   
   // new dynamic json buffer, let's just assume 20 bytes for now
   DynamicJsonBuffer jsonBuffer(30);
