@@ -60,29 +60,6 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
   pinMode(13, OUTPUT); //sd card led
 
-  delay(1000); //start delay
-  
-  // FIRMWARE LED FLASH
-  for(byte x = 0; x < _MAJORV; x++) //flash major version
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
-  }
-  
-  delay(350); //400ms delay between the stages
-  
-  for(byte x = 0; x < _MINORV; x++) //flash minor version
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
-  }
-  
-  delay(100); //1.5s delay between coming errors and firmware flash
-
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
 
@@ -122,6 +99,27 @@ void setup()
   //update filePath to point to file_name.file_extenion.
   filePath = FILE_NAME + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
+
+  // FIRMWARE LED FLASH
+  for(byte x = 0; x < _MAJORV; x++) //flash major version
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
+  }
+  
+  delay(400); //400ms delay between the stages
+  
+  for(byte x = 0; x < _MINORV; x++) //flash minor version
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
+  }
+  
+  delay(1000); //1s delay between coming errors and firmware flash
 }
 
 /* MAIN LOOP */
