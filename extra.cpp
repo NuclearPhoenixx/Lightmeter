@@ -29,16 +29,9 @@ void extra::signal_led(byte flashes)
 /* SLEEP MODE HELPER TO EXPAND ON SLEEPYDOG'S MAX 8000ms SLEEP */
 void extra::sleep(uint32_t sTime)
 {
-  if(sTime > 8000)
+  while(sTime > 0)
   {
-    do
-    {
-      sTime -= Watchdog.sleep(sTime);
-    } while(sTime > 0);
-  }
-  else //if no more than 8s sleep, just sleep
-  {
-    Watchdog.sleep(sTime);
+    sTime -= Watchdog.sleep(sTime);
   }
 }
 

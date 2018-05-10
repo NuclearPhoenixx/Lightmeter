@@ -35,7 +35,7 @@ String filePath; //this will hold the file path globally
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
-  pinMode(13, OUTPUT); //sd card led
+  pinMode(8, OUTPUT); //sd card led
 
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
