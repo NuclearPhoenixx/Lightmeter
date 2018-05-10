@@ -6,7 +6,6 @@
   * Sleep Mode/Standby between data logging.
   * Fix negative lux values.
   * Less flush?
-  * RTC time check fix so that it doesn't reset it to the sketch date if battery runs out.
 */
 #include <SD.h> //SD Card
 #include <EEPROM.h> //for EEPROM storage
@@ -42,7 +41,7 @@ void signal_led(byte flashes)
    *  4: SD FILESYSTEM ERROR
    *  5: NO RTC
    *  6: OTHER MISC ERROR
-   *  7: RTC BATTERY DIED
+   *  7: RTC TIME NOT SET
    */
   for(byte x = 0; x < flashes; x++)
   {
