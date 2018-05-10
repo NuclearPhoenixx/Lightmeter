@@ -64,7 +64,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
-| Power Consumption | 10 mA max + logging hardware | 30 mA  max|
+| Max Power Consumption | 10mA + logging hardware | 30mA active; 1mA standby |
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi | uSD Card |
 | Data Destination | Logging hardware and drivers | uSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
