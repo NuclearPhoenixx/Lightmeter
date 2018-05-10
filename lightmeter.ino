@@ -3,18 +3,18 @@
 
   TODO:
   * Check if SD Card space is full.
-  * Sleep Mode/Standby between data logging.
   * Fix negative lux values.
   * Less flush?
 */
 #include <SD.h> //SD Card
-#include <EEPROM.h> //for EEPROM storage
+#include <EEPROM.h> //For EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
+#include <Adafruit_SleepyDog.h> //For power down mode between logging
 #include "rtc.h"
 #include "lightsensor.h"
 
-#define _MAJORV 1 //major firmware version
-#define _MINORV 5 //minor firmware version
+#define _MAJORV 2 //major firmware version
+#define _MINORV 1 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
@@ -50,7 +50,7 @@ void signal_led(byte flashes)
     digitalWrite(LED_BUILTIN, LOW);
     delay(200);
   }
-  delay(800); //800ms delay after a LED signal to mark a distinct end to the signal
+  Watchdog.sleep(800); //800ms sleep delay after a LED signal to mark a distinct end to the signal
 }
 
 /* ARDUINO SETUP FUNCTION */
@@ -112,7 +112,7 @@ void setup()
     delay(200);
   }
   
-  delay(1000); //1s delay between coming errors and firmware flash
+  Watchdog.sleep(1000); //1000ms sleep delay between coming errors and firmware flash
 }
 
 /* MAIN LOOP */
@@ -135,14 +135,6 @@ void loop()
   data["unixtime"] = rtc.unixtime(); //input current RTC unixtime
   data["lux"] = lightsensor.luxRead(); //input lux value
   
-  /* TEST FOR NEXT UPDATE
-  EEPROM.put(10, data);
-  Serial.begin(9600);
-  JsonObject& a = jsonBuffer.createObject();
-  EEPROM.get(10, a);
-  a.printTo(Serial);
-  */
-  
   //to-be/future size of file with the new data in bytes
   uint32_t future_size = dataFile.size() + data.measureLength();
   
@@ -164,6 +156,7 @@ void loop()
   {
     signal_led(3);
   }
-  delay(M_INTERVAL); //sleep for the set time
+
+  Watchdog.sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
 
