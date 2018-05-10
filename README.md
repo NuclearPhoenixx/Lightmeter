@@ -60,6 +60,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | --- | --- | --- |
 | Lux Range | 500 uLux - 200,000 Lux | 188 uLux - 88,000 Lux |
 | Resolution | 50 - 100 uLux | 1 uLux |
+| Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
