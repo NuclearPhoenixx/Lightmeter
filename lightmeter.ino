@@ -90,12 +90,6 @@ void setup()
     }
   }
 
-  //SET RTC TIME IF NO TIME SET
-  if(rtc.lostPower())
-  {
-    rtc.setTime();
-  }
-
   //update filePath to point to file_name.file_extenion.
   filePath = FILE_NAME + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
@@ -125,11 +119,7 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
-  uint32_t unixtime = rtc.unixtime(); //grab the current RTC timestamp
-  uint32_t eepromTime; //this will hold the saved RTC timestamp
-  EEPROM.get(0, eepromTime); //read from address location 0
-  
-  if(unixtime < eepromTime) //check if RTC did reset back to 2000-1-1
+  if(rtc.lostPower()) //check if RTC lost power and time is wiped
   {
     while(1)
     {
@@ -143,7 +133,7 @@ void loop()
   // create new json object that will contain all the logged data
   JsonObject& data = jsonBuffer.createObject();
   
-  data["unixtime"] = unixtime; //input rtc time
+  data["unixtime"] = rtc.unixtime(); //input current RTC unixtime
   data["lux"] = lightsensor.luxRead(); //input lux value
   
   /* TEST FOR NEXT UPDATE

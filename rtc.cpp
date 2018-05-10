@@ -3,7 +3,6 @@
 #include "rtc.h" // include my header file
 
 #include <RTClib.h> //DS3231 lib
-#include <EEPROM.h> //for EEPROM storage
 
 RTC_DS3231 RTC_DS3231;
 
@@ -15,24 +14,17 @@ DS3231::DS3231()
 
 bool DS3231::begin()
 {
-  return RTC_DS3231.begin();
+  return RTC_DS3231.begin(); //begin the RTClib
 }
 
 bool DS3231::lostPower()
 {
-  return RTC_DS3231.lostPower();
-}
-
-void DS3231::setTime()
-{
-  DateTime createDate = DateTime(F(__DATE__), F(__TIME__)); //get the creation date
-  RTC_DS3231.adjust(createDate); //set the RTC to the creation date
-  EEPROM.put(0, createDate.unixtime()); //upload the creation time unixtime to EEPROM
+  return RTC_DS3231.lostPower(); //check DS3231 status register for lost power
 }
 
 uint32_t DS3231::unixtime()
 {
-  DateTime now = RTC_DS3231.now();
-  return now.unixtime();
+  DateTime theTime = RTC_DS3231.now();
+  return theTime.unixtime();
 }
 
