@@ -9,7 +9,6 @@
 #include <SD.h> //SD Card
 #include <EEPROM.h> //For EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
-#include <Adafruit_SleepyDog.h> //For power down mode between logging
 #include "rtc.h" //My DS3231 stuff
 #include "lightsensor.h" //My TSL2591 stuff
 #include "extra.h" //All the extra functions

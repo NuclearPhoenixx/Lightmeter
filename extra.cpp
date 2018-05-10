@@ -2,7 +2,7 @@
 
 #include "extra.h" // include my header file
 
-#include <Adafruit_SleepyDog.h> //For power down mode after signal_led
+#include <Adafruit_SleepyDog.h> //For power down sleep mode
 
 /* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
 void extra::signal_led(byte flashes)
