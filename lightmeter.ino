@@ -10,11 +10,12 @@
 #include <EEPROM.h> //For EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
 #include <Adafruit_SleepyDog.h> //For power down mode between logging
-#include "rtc.h"
-#include "lightsensor.h"
+#include "rtc.h" //My DS3231 stuff
+#include "lightsensor.h" //My TSL2591 stuff
+#include "extra.h" //All the extra functions
 
 #define _MAJORV 2 //major firmware version
-#define _MINORV 1 //minor firmware version
+#define _MINORV 2 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
@@ -31,28 +32,6 @@ File dataFile; //global variable that will hold the data file
 uint8_t fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
 
-/* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
-void signal_led(byte flashes)
-{
-  /* ERROR/SIGNAL FLASHES:
-   *  1: NO LIGHTSENSOR
-   *  2: NO SD CARD
-   *  3: FILE WRITE ERROR
-   *  4: SD FILESYSTEM ERROR
-   *  5: NO RTC
-   *  6: OTHER MISC ERROR
-   *  7: RTC TIME NOT SET
-   */
-  for(byte x = 0; x < flashes; x++)
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
-  }
-  Watchdog.sleep(800); //800ms sleep delay after a LED signal to mark a distinct end to the signal
-}
-
 /* ARDUINO SETUP FUNCTION */
 void setup()
 {
@@ -67,7 +46,7 @@ void setup()
   {
     while(1)
     {
-      signal_led(1);
+      extra::signal_led(1);
     }
   }
 
@@ -76,7 +55,7 @@ void setup()
   {
     while(1)
     {
-      signal_led(2);
+      extra::signal_led(2);
     }
   }
 
@@ -85,7 +64,7 @@ void setup()
   {
     while(1)
     {
-      signal_led(5);
+      extra::signal_led(5);
     }
   }
 
@@ -112,7 +91,7 @@ void setup()
     delay(200);
   }
   
-  Watchdog.sleep(1000); //1000ms sleep delay between coming errors and firmware flash
+  extra::sleep(1000); //1000ms sleep delay between coming errors and firmware flash
 }
 
 /* MAIN LOOP */
@@ -122,7 +101,7 @@ void loop()
   {
     while(1)
     {
-      signal_led(7);
+      extra::signal_led(7);
     }
   }
   
@@ -154,9 +133,9 @@ void loop()
   }
   else //if the file is not available, flash an error
   {
-    signal_led(3);
+    extra::signal_led(3);
   }
 
-  Watchdog.sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
+  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
 
