@@ -29,12 +29,12 @@ TSL2591 light sensor:
 
 DS3231 RTC:
 * Leap-Year compensation up to 2100
-* Digital Temp Sensor Output: ±3°C Accuracy
+* Integrated temperature-compensated crystal oscillator (TCXO) and crystal
 * Accuracy ±3.5ppm from -40°C to +85 °C
 * Years of precise timekeeping
 
 Adafruit Feather:
-* Tiny (51mm x 23mm x 8mm) and light (no pun intended) 5.1g
+* Tiny (51mm x 23mm x 8mm) and light 5.1g
 * ATmega32u4 @ 8MHz, 32K flash & 2K RAM 
 * Embedded uSD Card slot
 
@@ -43,7 +43,7 @@ Adafruit Feather:
 * Arbitrary time interval for measurements
 * FAT32 filesystem for uSD Card
 * Custom file name for the data log file(s)
-* Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of a too big file
+* Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of too large files
 * LED feedback about the status (errors, ...)
 
 ## Comparison
@@ -59,13 +59,13 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
 | Lux Range | 500 uLux - 200,000 Lux | 188 uLux - 120,000 Lux |
-| Resolution | 50 - 100 uLux | 1000 uLux (likely wrong, checking...) |
+| Resolution | 50 - 100 uLux | 1000 uLux ([likely wrong](https://github.com/adafruit/Adafruit_TSL2591_Library/issues/22)) |
 | Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
 | Max Power Consumption | 10mA + logging hardware | 30mA active; 0.9mA standby |
-| Requirements | Logging hardware, e.g. PC/Raspberry Pi | uSD Card |
-| Data Destination | Logging hardware and drivers | uSD Card |
+| Requirements | Logging hardware, e.g. PC/Raspberry Pi and drivers | uSD Card |
+| Data Destination | Logging hardware | uSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
 | Price | ~100 EUR | ~50 EUR |
