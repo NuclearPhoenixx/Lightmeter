@@ -3,25 +3,24 @@
 
   TODO:
   * Check if SD Card space is full.
-  * Fix negative lux values.
   * Less flush?
 */
 #include <SD.h> //SD Card
-#include <EEPROM.h> //For EEPROM storage
 #include <ArduinoJson.h> //For JSON data formatting
 #include "rtc.h" //My DS3231 stuff
 #include "lightsensor.h" //My TSL2591 stuff
 #include "extra.h" //All the extra functions
 
-#define _MAJORV 2 //major firmware version
-#define _MINORV 2 //minor firmware version
+#define _MAJORV 3 //major firmware version
+#define _MINORV 0 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = ".txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const uint16_t M_INTERVAL = 5000; //measurement interval for data logging, in ms
+const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
+const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
 /* END USER CONFIG */
 
 TSL2591 lightsensor = TSL2591(1, 2); //create the objects for my classes
@@ -90,8 +89,8 @@ void setup()
     delay(200);
   }
   
-  extra::sleep(1000); //1000ms sleep delay between coming errors and firmware flash
-  // Serial.begin(9600); //DEBUGGING SERIAL
+  extra::sleep(1000); //1000ms sleep delay between possible coming errors and firmware flash
+  //Serial.begin(9600); //DEBUGGING SERIAL
 }
 
 /* MAIN LOOP */
@@ -104,15 +103,30 @@ void loop()
       extra::signal_led(7);
     }
   }
+
+  float lux = lightsensor.luxRead();
+  byte tries = 0; //counter for tries
+
+  while(lux <= 0) //check if lux value is valid
+  {
+    if(tries >= MAX_TRIES)
+    {
+      lux = 0.0; //set lux to 0 to signal a problem
+      break;
+    }
+    extra::sleep(800);
+    lux = lightsensor.luxRead();
+    tries++;
+  }
   
   // new dynamic json buffer, let's just assume 20 bytes for now
   DynamicJsonBuffer jsonBuffer(30);
   
   // create new json object that will contain all the logged data
   JsonObject& data = jsonBuffer.createObject();
-  
+
   data["unixtime"] = rtc.unixtime(); //input current RTC unixtime
-  data["lux"] = lightsensor.luxRead(); //input lux value
+  data["lux"] = lux; //input lux value
   
   //to-be/future size of file with the new data in bytes
   uint32_t future_size = dataFile.size() + data.measureLength();

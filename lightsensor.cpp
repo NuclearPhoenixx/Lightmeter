@@ -59,6 +59,7 @@ bool TSL2591::configureSensor(char gain, char timing)
       tsl.setGain(TSL2591_GAIN_HIGH); // 428x gain
       break;
     default:
+      _gain = 3; //set gain to 3 (max)
       tsl.setGain(TSL2591_GAIN_MAX); // 9876x gain
   }
   
@@ -82,6 +83,7 @@ bool TSL2591::configureSensor(char gain, char timing)
       tsl.setTiming(TSL2591_INTEGRATIONTIME_500MS);
       break;
     default:
+      _timing = 5; //set timing to 5 (max)
       tsl.setTiming(TSL2591_INTEGRATIONTIME_600MS); //longest integration time (dim light)
   }
 
@@ -95,12 +97,67 @@ float TSL2591::luxRead()
   // More advanced data read example. Read 32 bits with top 16 bits IR, bottom 16 bits full spectrum
   // That way you can do whatever math and comparisons you want!
   uint32_t lum = tsl.getFullLuminosity();
-  
   uint16_t full = lum & 0xFFFF;
-  uint16_t ir = lum >> 16;
   
-  /* "full" values 0 and 65535 are invalid and thus gain should be changed */
+  while(full > 62535) //decrease gain or timing if close to overflow (65535)
+  {
+    if(_gain == 0) //if gain already at minimum decrease timing
+    {
+      if(_timing == 0) //if timing also already at minimum break
+      {
+        break;
+      }
+      else //else decrease timing
+      {
+        TSL2591::configureSensor(_gain, _timing - 1);
+      }
+    }
+    else //else decrease gain
+    {
+      TSL2591::configureSensor(_gain - 1);
+    }
+    
+    lum = tsl.getFullLuminosity(); //get new values after the changes
+    full = lum & 0xFFFF;
+  }
 
+  while(full < 1000) //increase gain or timing if close to 0
+  {
+    if(_gain == 3) //if gain is already max increase the timing
+    {
+      if(_timing == 5) //if timing also already at maximum break
+      {
+        break;
+      }
+      else //else increase timing
+      {
+        TSL2591::configureSensor(_gain, _timing + 1);
+      }
+    }
+    else //else increase gain
+    {
+      TSL2591::configureSensor(_gain + 1);
+    }
+
+    lum = tsl.getFullLuminosity(); //get new values after the changes
+    full = lum & 0xFFFF;
+  }
+
+  uint16_t ir = lum >> 16;
+  float lux = tsl.calculateLux(full, ir);
+  
   return tsl.calculateLux(full, ir);
+}
+
+/* Returns the current lightsensor gain */
+byte TSL2591::getGain()
+{
+  return TSL2591::_gain;
+}
+
+/* Returns the current lightsensor timing */
+byte TSL2591::getTiming()
+{
+  return TSL2591::_timing;
 }
 

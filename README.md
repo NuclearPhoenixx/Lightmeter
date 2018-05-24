@@ -23,7 +23,7 @@ This list refers to the current prototype:
 ## Hardware Features
 
 TSL2591 light sensor:
-* Lux Range: 188 uLux - 88,000 Lux
+* Lux Range: 188 uLux - 88,000 Lux on the fly
 * 600M:1 Dynamic Range
 * Separate measurements of infrared, full-spectrum or human-visible light
 
@@ -58,13 +58,13 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
-| Lux Range | 500 uLux - 200,000 Lux | 188 uLux - 88,000 Lux |
-| Resolution | 50 - 100 uLux | 1 uLux |
+| Lux Range | 500 uLux - 200,000 Lux | 188 uLux - 120,000 Lux |
+| Resolution | 50 - 100 uLux | 1000 uLux (likely wrong, checking...) |
 | Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
-| Max Power Consumption | 10mA + logging hardware | 30mA active; 1mA standby |
+| Max Power Consumption | 10mA + logging hardware | 30mA active; 0.9mA standby |
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi | uSD Card |
 | Data Destination | Logging hardware and drivers | uSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |

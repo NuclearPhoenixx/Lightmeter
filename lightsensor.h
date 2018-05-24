@@ -14,6 +14,8 @@ class TSL2591
     void displaySensorDetails();
     bool configureSensor(char gain = -1, char timing = -1);
     float luxRead();
+    byte getGain();
+    byte getTiming();
     
   private:
     char _gain; //gain and timing for the first config
