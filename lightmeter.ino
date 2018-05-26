@@ -5,6 +5,7 @@
   * Check if SD Card is completely full.
   * Less flush?
   * Option to use date as file name.
+  * De-/Increase timing before de-/increasing the gain.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
