@@ -2,8 +2,9 @@
   DIY Kuffner-Sternwarte Lightmeter
 
   TODO:
-  * Check if SD Card space is full.
+  * Check if SD Card is completely full.
   * Less flush?
+  * Option to use date as file name.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
