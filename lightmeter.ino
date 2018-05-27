@@ -67,6 +67,15 @@ void setup()
       extra::signal_led(5);
     }
   }
+  
+  //CHECK IF RTC LOST POWER AND TIME IS INVALID
+  if(rtc.lostPower())
+  {
+    while(1)
+    {
+      extra::signal_led(7);
+    }
+  }
 
   //update filePath to point to file_name.file_extenion.
   filePath = FILE_NAME + FILE_EXTENSION;
@@ -98,14 +107,6 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
-  if(rtc.lostPower()) //check if RTC lost power and time is wiped
-  {
-    while(1)
-    {
-      extra::signal_led(7);
-    }
-  }
-
   float lux = lightsensor.luxRead();
   byte tries = 0; //counter for tries
 
