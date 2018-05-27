@@ -65,7 +65,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Weight | 370g | - |
 | Power Supply | 5V | 5V / 3.3V |
 | Max Power Consumption | 10mA + logging hardware | 30mA active; 0.9mA standby |
-| Requirements | Logging hardware, e.g. PC/Raspberry Pi and drivers | uSD Card |
+| Requirements | Logging hardware, e.g. PC/Raspberry Pi and drivers | uSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | uSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
 | Price | ~100 EUR | ~50 EUR |
