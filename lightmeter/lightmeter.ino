@@ -134,12 +134,13 @@ void loop()
   //to-be/future size of file with the new data in bytes
   uint32_t future_size = dataFile.size() + data.measureLength();
   
-  //check if future_size is bigger than specified max size, if yes, write to new file
-  if(future_size > MAX_FILESIZE)
+  //check if future_size is bigger than specified max size, iterate until a valid file is opened
+  while(future_size > MAX_FILESIZE)
   {
     fileNum++; //add 1 to the file number
     filePath = FILE_NAME + fileNum + FILE_EXTENSION; //update filename to include the file number
     dataFile = SD.open(filePath, FILE_WRITE);
+    future_size = dataFile.size() + data.measureLength();
   }
 
   //if the data file is available, write the data to it
