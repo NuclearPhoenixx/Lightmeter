@@ -6,6 +6,7 @@
   * Less flush?
   * Option to use date as file name.
   * De-/Increase timing before de-/increasing the gain.
+  * Make settings accessible with a settigns file on the SD card.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
@@ -19,7 +20,7 @@
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
-const String FILE_EXTENSION = ".txt"; //file extension for the data file; 3 chars or less!
+const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
 const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
@@ -78,7 +79,7 @@ void setup()
   }
 
   //update filePath to point to file_name.file_extenion.
-  filePath = FILE_NAME + FILE_EXTENSION;
+  filePath = FILE_NAME + "." + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
 
   // FIRMWARE LED FLASH
@@ -138,7 +139,7 @@ void loop()
   while(future_size > MAX_FILESIZE)
   {
     fileNum++; //add 1 to the file number
-    filePath = FILE_NAME + fileNum + FILE_EXTENSION; //update filename to include the file number
+    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION;; //update filename to include the file number
     dataFile = SD.open(filePath, FILE_WRITE);
     future_size = dataFile.size() + data.measureLength();
   }
