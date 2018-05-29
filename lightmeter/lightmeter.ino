@@ -139,7 +139,7 @@ void loop()
   while(future_size > MAX_FILESIZE)
   {
     fileNum++; //add 1 to the file number
-    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION;; //update filename to include the file number
+    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //update filename to include the file number
     dataFile = SD.open(filePath, FILE_WRITE);
     future_size = dataFile.size() + data.measureLength();
   }
