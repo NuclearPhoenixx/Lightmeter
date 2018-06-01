@@ -4,7 +4,7 @@ Fully autonomous instrument for measuring and logging the levels of artificial n
 
 This instrument is based on a micro-controller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to program & maintain. As long as there is power and space on the SD Card the board autonomously measures the current light levels in lux and saves them together with the time from an ultra-precise RTC to a file on the SD Card in easy-to-work-with JSON format. No other requirements.
 
-This project aims to be a more user-friendly and easier to use instrument than the Kuffner-Sternwarte Lightmeter, see below at [idea](https://github.com/Phoenix1747/Lightmeter#idea).
+This project aims to be a more user-friendly and easier to use, though much more unprofessional, instrument than the Kuffner-Sternwarte Lightmeter, see below at [idea](https://github.com/Phoenix1747/Lightmeter#idea).
 
 ## Idea
 
