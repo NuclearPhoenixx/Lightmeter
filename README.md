@@ -10,7 +10,7 @@ This project aims to be a more straightforward and easier to use, though obvious
 
 The idea for this project came from my friends at the [Kuffner Sternwarte](http://kuffner-sternwarte.at), their well-known [Lightmeter](http://hms.sternhell.at/lightwiki) and their campaign against light pollution and the ongoing disappearence of our beautiful nightsky. As just mentioned they developed their own little light sensor board, initially for the International Year of Astronomy 2009, and have since then made extensive measurements of the light levels in Europe with the support of universities and other observatories.
 
-However, I as a normal user and also as developer have found some things that I don't really like about it. For example, you have to have a  logging device constantly plugged into the lightmeter and you need to have the drivers and software for it. So I came up with my own solution - this project. If you're more interested about this please head to the [comparison](https://github.com/Phoenix1747/Lightmeter#comparison) section where I compare it to the Kuffner-Sternwarte Lightmeter.
+However, I as a normal user and also as developer have found some things that I don't really like about it. For example, you have to have a logging device constantly plugged into the lightmeter and you need to have the drivers and software for it. So I came up with my own solution - this project. If you're more interested about this please head to the [comparison](https://github.com/Phoenix1747/Lightmeter#comparison) section where I compare it to the Kuffner-Sternwarte Lightmeter.
 
 ## Parts list
 
