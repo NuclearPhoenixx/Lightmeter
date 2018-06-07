@@ -1,5 +1,5 @@
 /*
-  DIY Kuffner-Sternwarte Lightmeter
+  DIY Lightmeter
 
   TODO:
   * Check if SD Card is completely full.
