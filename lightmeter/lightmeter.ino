@@ -133,7 +133,7 @@ void loop()
   data["lux"] = lux; //input lux value
   
   //to-be/future size of file with the new data in bytes
-  uint32_t future_size = dataFile.size() + data.measureJson();
+  uint32_t future_size = dataFile.size() + measureJson(data);
   
   //check if future_size is bigger than specified max size, iterate until a valid file is opened
   while(future_size > MAX_FILESIZE)
@@ -141,7 +141,7 @@ void loop()
     fileNum++; //add 1 to the file number
     filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //update filename to include the file number
     dataFile = SD.open(filePath, FILE_WRITE);
-    future_size = dataFile.size() + data.measureJson();
+    future_size = dataFile.size() + measureJson(data);
   }
 
   //if the data file is available, write the data to it
