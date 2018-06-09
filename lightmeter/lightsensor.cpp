@@ -161,4 +161,3 @@ byte TSL2591::getTiming()
   return TSL2591::_timing;
 }
 
-

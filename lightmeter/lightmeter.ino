@@ -159,4 +159,3 @@ void loop()
   extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
 
-
