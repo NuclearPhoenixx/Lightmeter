@@ -32,7 +32,7 @@ void TSL2591::displaySensorDetails()
   Serial.print  (F("Unique ID:    ")); Serial.println(sensor.sensor_id);
   Serial.print  (F("Max Value:    ")); Serial.print(sensor.max_value); Serial.println(F(" lux"));
   Serial.print  (F("Min Value:    ")); Serial.print(sensor.min_value, 6); Serial.println(F(" lux"));
-  Serial.print  (F("Resolution:   ")); Serial.print(sensor.resolution, 4); Serial.println(F(" lux"));  
+  Serial.print  (F("Resolution:   ")); Serial.print(sensor.resolution, 6); Serial.println(F(" lux"));  
   Serial.println(F("------------------------------------"));
   Serial.println(F(""));
 }
@@ -99,22 +99,22 @@ float TSL2591::luxRead()
   uint32_t lum = tsl.getFullLuminosity();
   uint16_t full = lum & 0xFFFF;
   
-  while(full > 62535) //decrease gain or timing if close to overflow (65535)
+  while(full > 62535) //decrease timing or gain if close to overflow (65535)
   {
-    if(_gain == 0) //if gain already at minimum decrease timing
+    if(_timing == 0) //if timing already at minimum decrease gain
     {
-      if(_timing == 0) //if timing also already at minimum break
+      if(_gain == 0) //if gain also already at minimum break
       {
         break;
       }
-      else //else decrease timing
+      else //else decrease gain
       {
-        TSL2591::configureSensor(_gain, _timing - 1);
+        TSL2591::configureSensor(_gain - 1);
       }
     }
-    else //else decrease gain
+    else //else decrease timing
     {
-      TSL2591::configureSensor(_gain - 1);
+      TSL2591::configureSensor(_gain, _timing - 1);
     }
     
     lum = tsl.getFullLuminosity(); //get new values after the changes
