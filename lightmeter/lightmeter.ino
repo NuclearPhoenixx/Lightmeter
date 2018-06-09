@@ -5,8 +5,7 @@
   * Check if SD Card is completely full.
   * Less flush?
   * Option to use date as file name.
-  * De-/Increase timing before de-/increasing the gain.
-  * Make settings accessible with a settigns file on the SD card.
+  * Make settings accessible with a settings file on the SD card.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
@@ -15,7 +14,7 @@
 #include "extra.h" //All the extra functions
 
 #define _MAJORV 3 //major firmware version
-#define _MINORV 0 //minor firmware version
+#define _MINORV 1 //minor firmware version
 
 /* BEGIN USER CONFIG */
 const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
@@ -30,7 +29,7 @@ TSL2591 lightsensor = TSL2591(1, 2); //create the objects for my classes
 DS3231 rtc = DS3231();
 
 File dataFile; //global variable that will hold the data file
-uint8_t fileNum = 0; //global number of file
+byte fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
 
 /* ARDUINO SETUP FUNCTION */
@@ -82,7 +81,7 @@ void setup()
   filePath = FILE_NAME + "." + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
 
-  // FIRMWARE LED FLASH
+  // FIRMWARE POWERUP LED FLASH
   for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -108,7 +107,7 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
-  float lux = lightsensor.luxRead();
+  float lux = lightsensor.luxRead(); //get lux values
   byte tries = 0; //counter for tries
 
   while(lux <= 0) //check if lux value is valid
@@ -118,19 +117,21 @@ void loop()
       lux = 0.0; //set lux to 0 to signal a problem
       break;
     }
-    extra::sleep(800);
+    extra::sleep(600); //sleep for 600ms (worst case to let the lightsensor calm down)
     lux = lightsensor.luxRead();
     tries++;
   }
+
+  uint32_t timestamp = rtc.unixtime(); //get unix timestamp
   
-  // new dynamic json buffer, let's assume 30 bytes for now
-  DynamicJsonDocument jsonBuffer(30);
+  // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
+  StaticJsonDocument<40> jsonDoc;
   
   // create new json object that will contain all the logged data
-  JsonObject& data = jsonBuffer.to<JsonObject>();
+  JsonObject& data = jsonDoc.to<JsonObject>();
 
-  data["unixtime"] = rtc.unixtime(); //input current RTC unixtime
-  data["lux"] = lux; //input lux value
+  data[F("unixtime")] = timestamp; //input current RTC unixtime
+  data[F("lux")] = lux; //input lux value
   
   //to-be/future size of file with the new data in bytes
   uint32_t future_size = dataFile.size() + measureJson(data);
@@ -147,7 +148,7 @@ void loop()
   //if the data file is available, write the data to it
   if(dataFile)
   {
-    serializeJson(data, dataFile); //efficiently append to the file
+    serializeJson(data, dataFile); //append the compact data to the file
     dataFile.flush(); //save the data to the file, needs up to 3x the power
   }
   else //if the file is not available, flash an error
@@ -157,4 +158,5 @@ void loop()
 
   extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
+
 
