@@ -3,7 +3,7 @@
 
   TODO:
   * Check if SD Card is completely full.
-  * Less flush?
+  * Make option to buffer data to FRAM before saving to the SD card.
   * Option to use date as file name.
   * Make settings accessible with a settings file on the SD card.
 */
