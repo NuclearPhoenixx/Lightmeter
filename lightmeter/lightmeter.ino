@@ -2,10 +2,12 @@
   DIY Lightmeter
 
   TODO:
-  * Check if SD Card is completely full.
-  * Make option to buffer data to FRAM before saving to the SD card.
-  * Option to use date as file name.
-  * Make settings accessible with a settings file on the SD card.
+  * Check what happens if the SD card is full.
+  * Add option to buffer data to FRAM before saving to the SD card.
+  * Option to use date (daily) as file name.
+  * Open up settings in settings file (JSON) so that you don't need to reflash
+      the whole thing if you want to change anything.
+  * Add option to set a lower lux limit for the lightmeter to reduce the amount of data
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
