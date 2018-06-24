@@ -1,7 +1,7 @@
 /* This contains all the extra utility functions for the lightmeter */
 
 #include "EXTRA.h" // include my header file
-#include <Adafruit_SleepyDog.h> //For power down sleep mode, seeking alternative for ATMEGA328P
+#include <Adafruit_SleepyDog.h> //For power down sleep mode
 
 /* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
 void extra::signal_led(byte flashes)
