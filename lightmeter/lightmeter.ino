@@ -3,7 +3,6 @@
 
   TODO:
   * Check what happens if the SD card is full.
-  * Add option to buffer data to FRAM before saving to the SD card.
   * Option to use date (daily) as file name.
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
@@ -11,28 +10,36 @@
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
-#include "rtc.h" //My DS3231 stuff
-#include "lightsensor.h" //My TSL2591 stuff
-#include "extra.h" //All the extra functions
 
-#define _MAJORV 3 //major firmware version
-#define _MINORV 1 //minor firmware version
+#include "RTC.h" //My DS3231 stuff
+#include "LIGHTSENSOR.h" //My TSL2591 stuff
+#include "FRAM.h" //All the FRAM stuff
+#include "EXTRA.h" //All the extra functions
+
+#define _MAJORV 4 //major firmware version
+#define _MINORV 0 //minor firmware version
+#define SD_PIN 4 //pin connected to the CS pin of the uSD card
+#define FRAM_PIN 14 //pin connected to the CS pin of the FRAM chip
 
 /* BEGIN USER CONFIG */
-const byte SD_PIN = 4; //pin connected to the chip select line of the SD card
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
 const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
+const byte DATA_BUFFER = 10; //how many data points get buffered before written to SD -> saves MUCH power!
 /* END USER CONFIG */
 
+
 TSL2591 lightsensor = TSL2591(1, 2); //create the objects for my classes
-DS3231 rtc = DS3231();
+RTC_DS3231 rtc;
+FRAM_SPI fram = FRAM_SPI(FRAM_PIN);
 
 File dataFile; //global variable that will hold the data file
 byte fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
+byte lastAddrByte = 0; //this will hold the last address byte that has been written to FRAM
+byte bufferCounter = 0; //global number of buffered data points
 
 /* ARDUINO SETUP FUNCTION */
 void setup()
@@ -79,10 +86,22 @@ void setup()
     }
   }
 
+  //INIT FRAM
+  if(fram.begin())
+  {
+    while(1)
+    {
+      extra::signal_led(8);
+    }
+  }
+  
   //update filePath to point to file_name.file_extenion.
   filePath = FILE_NAME + "." + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
 
+  //grab the last saved data point address from FRAM
+  lastAddrByte = fram.read8(lastAddrByte);
+  
   // FIRMWARE POWERUP LED FLASH
   for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
@@ -124,7 +143,18 @@ void loop()
     tries++;
   }
 
-  uint32_t timestamp = rtc.unixtime(); //get unix timestamp
+  //DateTime now = rtc.now();
+  uint32_t timestamp = rtc.now().unixtime(); //get unix timestamp
+
+  // buffer data, else write everything to uSD card
+  if(bufferCounter <= DATA_BUFFER){
+    bufferCounter++;
+  /*
+   * 
+   * T O D O
+   * 
+   */
+  }
   
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
