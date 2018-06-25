@@ -7,6 +7,7 @@
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
   * Add option to set a lower lux limit for the lightmeter to reduce the amount of data
+  * Check if uSD card is plugged in before write with CD pin.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
