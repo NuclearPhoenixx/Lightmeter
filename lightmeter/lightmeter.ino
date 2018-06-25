@@ -38,14 +38,13 @@ FRAM_SPI fram = FRAM_SPI(FRAM_PIN);
 File dataFile; //global variable that will hold the data file
 byte fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
-byte lastAddrByte = 0; //this will hold the last address byte that has been written to FRAM
-byte bufferCounter = 0; //global number of buffered data points
+//byte lastAddrByte = 0; //this will hold the last address byte that has been written to FRAM
+//byte bufferCounter = 0; //global number of buffered data points
 
 /* ARDUINO SETUP FUNCTION */
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
-  pinMode(8, OUTPUT); //sd card led
 
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
@@ -87,7 +86,7 @@ void setup()
   }
 
   //INIT FRAM
-  if(fram.begin())
+  if(!fram.begin())
   {
     while(1)
     {
@@ -100,7 +99,7 @@ void setup()
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
 
   //grab the last saved data point address from FRAM
-  lastAddrByte = fram.read8(lastAddrByte);
+  //lastAddrByte = fram.read8(lastAddrByte);
   
   // FIRMWARE POWERUP LED FLASH
   for(byte x = 0; x < _MAJORV; x++) //flash major version
@@ -147,14 +146,14 @@ void loop()
   uint32_t timestamp = rtc.now().unixtime(); //get unix timestamp
 
   // buffer data, else write everything to uSD card
+  /*
   if(bufferCounter <= DATA_BUFFER){
     bufferCounter++;
-  /*
-   * 
-   * T O D O
-   * 
-   */
+
+      T O D O
+    
   }
+  */
   
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
