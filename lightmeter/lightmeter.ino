@@ -1,13 +1,14 @@
 /*
-  DIY Lightmeter
+  All-In-One Arduino Lightmeter
 
-  TODO:
-  * Check what happens if the SD card is full.
+  TO DO:
+  * Check what happens if the SD card space is full.
   * Option to use date (daily) as file name.
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
-  * Add option to set a lower lux limit for the lightmeter to reduce the amount of data
+  * Add option to set an upper lux limit for the lightmeter to reduce the amount of data
   * Check if uSD card is plugged in before write with CD pin.
+  * Finally implement FRAM buffering.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
