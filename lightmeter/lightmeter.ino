@@ -9,6 +9,7 @@
   * Add option to set an upper lux limit for the lightmeter to reduce the amount of data
   * Check if uSD card is plugged in before write with CD pin.
   * Finally implement FRAM buffering.
+  * Implement customized TSL2591 lib.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
@@ -161,7 +162,7 @@ void loop()
   StaticJsonDocument<40> jsonDoc;
   
   // create new json object that will contain all the logged data
-  JsonObject& data = jsonDoc.to<JsonObject>();
+  JsonObject data = jsonDoc.to<JsonObject>();
 
   data[F("unixtime")] = timestamp; //input current RTC unixtime
   data[F("lux")] = lux; //input lux value
