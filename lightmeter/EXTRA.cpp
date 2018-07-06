@@ -16,14 +16,15 @@ void extra::signal_led(byte flashes)
    *  7: RTC TIME NOT SET
    *  8: NO FRAM CHIP FOUND
    */
+  extra::sleep(800); //800ms sleep delay before LED status signaling
+  
   for(byte x = 0; x < flashes; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
+    extra::sleep(200);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
+    extra::sleep(200);
   }
-  extra::sleep(800); //800ms sleep delay after a LED signal to mark a distinct end to the signal
 }
 
 /* SLEEP MODE HELPER TO EXPAND ON SLEEPYDOG'S MAX 8000ms SLEEP */

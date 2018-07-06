@@ -8,6 +8,8 @@
       the whole thing if you want to change anything.
   * Add option to set a lower lux limit for the lightmeter to reduce the amount of data
   * Check if uSD card is plugged in before write with CD pin.
+  * TSL2591 timing + 100ms delay between failed measurements.
+  * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
@@ -26,7 +28,7 @@
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
+const uint16_t M_INTERVAL = 1000; //time between measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
 const byte DATA_BUFFER = 10; //how many data points get buffered before written to SD -> saves MUCH power!
 /* END USER CONFIG */
@@ -106,22 +108,21 @@ void setup()
   for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
+    extra::sleep(200);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
+    extra::sleep(200);
   }
   
-  delay(400); //400ms delay between the stages
+  extra::sleep(400); //400ms delay between the stages
   
   for(byte x = 0; x < _MINORV; x++) //flash minor version
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
+    extra::sleep(200);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
+    extra::sleep(200);
   }
   
-  extra::sleep(1000); //1000ms sleep delay between possible coming errors and firmware flash
   //Serial.begin(9600); //DEBUGGING SERIAL
 }
 
@@ -143,6 +144,8 @@ void loop()
     tries++;
   }
 
+  //Serial.println(lux,6); //DEBUG LUX FOR CALIBRATION
+   
   //DateTime now = rtc.now();
   uint32_t timestamp = rtc.now().unixtime(); //get unix timestamp
 
