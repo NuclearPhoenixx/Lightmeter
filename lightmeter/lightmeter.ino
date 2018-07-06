@@ -1,13 +1,15 @@
 /*
-  DIY Lightmeter
+  All-In-One Arduino Lightmeter
 
-  TODO:
-  * Check what happens if the SD card is full.
+  TO DO:
+  * Check what happens if the SD card space is full.
   * Option to use date (daily) as file name.
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
-  * Add option to set a lower lux limit for the lightmeter to reduce the amount of data
+  * Add option to set an upper lux limit for the lightmeter to reduce the amount of data
   * Check if uSD card is plugged in before write with CD pin.
+  * Finally implement FRAM buffering.
+  * Implement customized TSL2591 lib.
   * TSL2591 timing + 100ms delay between failed measurements.
   * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
 */
@@ -28,7 +30,7 @@
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const uint16_t M_INTERVAL = 1000; //time between measurements, in ms
+const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
 const byte DATA_BUFFER = 10; //how many data points get buffered before written to SD -> saves MUCH power!
 /* END USER CONFIG */
@@ -163,7 +165,7 @@ void loop()
   StaticJsonDocument<40> jsonDoc;
   
   // create new json object that will contain all the logged data
-  JsonObject& data = jsonDoc.to<JsonObject>();
+  JsonObject data = jsonDoc.to<JsonObject>();
 
   data[F("unixtime")] = timestamp; //input current RTC unixtime
   data[F("lux")] = lux; //input lux value
@@ -193,4 +195,3 @@ void loop()
 
   extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
-
