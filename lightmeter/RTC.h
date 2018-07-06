@@ -80,17 +80,5 @@ public:
     static void writeSqwPinMode(Ds3231SqwPinMode mode);
 };
 
-// RTC using the internal millis() clock, has to be initialized before use
-// NOTE: this clock won't be correct once the millis() timer rolls over (>49d?)
-class RTC_Millis {
-public:
-    static void begin(const DateTime& dt) { adjust(dt); }
-    static void adjust(const DateTime& dt);
-    static DateTime now();
-
-protected:
-    static long offset;
-};
-
 #endif
 

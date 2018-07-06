@@ -207,19 +207,6 @@ TimeSpan TimeSpan::operator-(const TimeSpan& right) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// RTC_Millis implementation
-
-long RTC_Millis::offset = 0;
-
-void RTC_Millis::adjust(const DateTime& dt) {
-    offset = dt.unixtime() - millis() / 1000;
-}
-
-DateTime RTC_Millis::now() {
-  return (uint32_t)(offset + millis() / 1000);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // RTC_DS3231 implementation
 
 static uint8_t bcd2bin (uint8_t val) { return val - 6 * (val >> 4); }

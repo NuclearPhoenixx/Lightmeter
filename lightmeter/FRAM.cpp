@@ -2,8 +2,8 @@
  * Original Author: KTOWN (Adafruit Industries), licensed under BSD - see header file!
  * Changes involved to make it work best with my lightmeter.
 */
-#include <stdlib.h>
-#include <math.h>
+//#include <stdlib.h> //already included by Arduino.h
+//#include <math.h> //already included by Arduino.h
 
 #include "FRAM.h"
 
@@ -22,11 +22,6 @@ FRAM_SPI::FRAM_SPI(int8_t cs)
 boolean FRAM_SPI::begin()
 {
   return begin(_cs, 2);
-}
-
-boolean FRAM_SPI::begin(uint8_t nAddressSizeBytes)
-{
-  return begin(_cs, nAddressSizeBytes);
 }
 
 boolean FRAM_SPI::begin(int8_t cs, uint8_t nAddressSizeBytes)
@@ -230,6 +225,9 @@ void FRAM_SPI::setAddressSize(uint8_t nAddressSize)
 {
   _nAddressSizeBytes = nAddressSize;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// P R I V A T E
 
 uint8_t FRAM_SPI::SPItransfer(uint8_t x)
 {

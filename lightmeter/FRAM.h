@@ -55,7 +55,6 @@ class FRAM_SPI {
   FRAM_SPI(int8_t cs);
 
   boolean begin();
-  boolean begin(uint8_t nAddressSizeBytes);
   boolean begin(int8_t cs, uint8_t nAddressSizeBytes);
   void writeEnable(bool enable);
   void write8(uint32_t addr, uint8_t value);
