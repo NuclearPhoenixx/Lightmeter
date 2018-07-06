@@ -110,9 +110,9 @@ void setup()
   for(byte x = 0; x < _MAJORV; x++) //flash major version
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    extra::sleep(200);
+    delay(200);
     digitalWrite(LED_BUILTIN, LOW);
-    extra::sleep(200);
+    delay(200);
   }
   
   extra::sleep(400); //400ms delay between the stages
@@ -120,9 +120,9 @@ void setup()
   for(byte x = 0; x < _MINORV; x++) //flash minor version
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    extra::sleep(200);
+    delay(200);
     digitalWrite(LED_BUILTIN, LOW);
-    extra::sleep(200);
+    delay(200);
   }
   
   //Serial.begin(9600); //DEBUGGING SERIAL

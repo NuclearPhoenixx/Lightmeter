@@ -17,7 +17,7 @@ class TSL2591
     byte getGain();
     byte getTiming();
     
-  //private:
+  private:
     char _gain; //gain and timing for the first config
     char _timing;
 };

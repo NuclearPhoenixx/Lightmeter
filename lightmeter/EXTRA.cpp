@@ -21,9 +21,9 @@ void extra::signal_led(byte flashes)
   for(byte x = 0; x < flashes; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    extra::sleep(200);
+    delay(200);
     digitalWrite(LED_BUILTIN, LOW);
-    extra::sleep(200);
+    delay(200);
   }
 }
 
