@@ -1,6 +1,8 @@
 /*
   All-In-One Arduino Lightmeter
 
+  FIRMWARE VERSION 0.1, INCOMPLETE PREVIEW VERSION
+
   TO DO:
   * Check what happens if the SD card space is full.
   * Option to use date (daily) as file name.
@@ -21,8 +23,6 @@
 #include "FRAM.h" //All the FRAM stuff
 #include "EXTRA.h" //All the extra functions
 
-#define _MAJORV 4 //major firmware version
-#define _MINORV 0 //minor firmware version
 #define SD_PIN 4 //pin connected to the CS pin of the uSD card
 #define FRAM_PIN 14 //pin connected to the CS pin of the FRAM chip
 
@@ -106,23 +106,13 @@ void setup()
   //grab the last saved data point address from FRAM
   //lastAddrByte = fram.read8(lastAddrByte);
   
-  // FIRMWARE POWERUP LED FLASH
-  for(byte x = 0; x < _MAJORV; x++) //flash major version
+  // FLASH 5x REALLY QUICKLY TO SIGNAL OK
+  for(byte x = 0; x < 5; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
+    delay(100);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
-  }
-  
-  extra::sleep(400); //400ms delay between the stages
-  
-  for(byte x = 0; x < _MINORV; x++) //flash minor version
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
+    delay(100);
   }
   
   //Serial.begin(9600); //DEBUGGING SERIAL
