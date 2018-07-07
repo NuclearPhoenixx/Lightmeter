@@ -12,7 +12,8 @@ class TSL2591
     bool begin(); //setup
   
     void displaySensorDetails();
-    bool configureSensor(char gain = -1, char timing = -1);
+    void setGain(byte gain = -1);
+    void setTiming(byte timing = -1);
     float luxRead();
     byte getGain();
     byte getTiming();

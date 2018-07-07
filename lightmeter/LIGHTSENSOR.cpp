@@ -15,8 +15,11 @@ TSL2591::TSL2591(byte gain, byte timing)
 /* SETUP FUNCTION */
 bool TSL2591::begin()
 {
-  if(tsl.begin()) {
-    return TSL2591::configureSensor(_gain, _timing); //first config with the vars from the constructor
+  if(tsl.begin())
+  {
+    TSL2591::setGain(_gain); //first config with the vars from the constructor
+    TSL2591::setTiming(_timing);
+    return true;
   }
   return false; //if no light sensor there, return false
 }
@@ -37,58 +40,46 @@ void TSL2591::displaySensorDetails()
   Serial.println(F(""));
 }
 
-/* Configure gain and integration time for the TSL2591 */
-bool TSL2591::configureSensor(char gain, char timing)
+/* Array with all the gain variables */
+byte lightsensorGains[4] = {
+                           TSL2591_GAIN_LOW, // 1x gain
+                           TSL2591_GAIN_MED, // 25x gain
+                           TSL2591_GAIN_HIGH, // 428x gain
+                           TSL2591_GAIN_MAX // 9876x gain
+                          };
+
+/* Set the lightsensor gain */
+void TSL2591::setGain(byte gain)
 {
-  if(gain == -1) {gain = _gain;}
-  if(timing == -1) {timing = _timing;}
-
-  _gain = gain; //Update private vars if the gain and timing get updated
-  _timing = timing;
-
-  // You can change the gain on the fly, to adapt to brighter/dimmer light situations
-  switch(gain)
+  if(gain < 0 || gain > 4)
   {
-    case 0:
-      tsl.setGain(TSL2591_GAIN_LOW); // 1x gain (bright light)
-      break;
-    case 1:
-      tsl.setGain(TSL2591_GAIN_MED); // 25x gain
-      break;
-    case 2:
-      tsl.setGain(TSL2591_GAIN_HIGH); // 428x gain
-      break;
-    default:
-      _gain = 3; //set gain to 3 (max)
-      tsl.setGain(TSL2591_GAIN_MAX); // 9876x gain
+    return;
   }
-  
-  // Changing the integration time gives you a longer time over which to sense light
-  // longer timelines are slower, but are good in very low light situtations!
-  switch(timing)
-  {
-    case 0:
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_100MS); //shortest integration time (bright light)
-      break;
-    case 1:
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_200MS);
-      break;
-    case 2:
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_300MS);
-      break;
-    case 3:
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_400MS);
-      break;
-    case 4:
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_500MS);
-      break;
-    default:
-      _timing = 5; //set timing to 5 (max)
-      tsl.setTiming(TSL2591_INTEGRATIONTIME_600MS); //longest integration time (dim light)
-  }
+  _gain = gain; //Update private gain var
 
-  /* TODO: Confirm changes by comparing the get_value to the set_value */
-  return true; //return true for now
+  tsl.setGain(lightsensorGains[gain]);
+}
+
+/* Array with all the integration timing variables */
+byte lightsensorTimings[6] = {
+                              TSL2591_INTEGRATIONTIME_100MS,
+                              TSL2591_INTEGRATIONTIME_200MS,
+                              TSL2591_INTEGRATIONTIME_300MS,
+                              TSL2591_INTEGRATIONTIME_400MS,
+                              TSL2591_INTEGRATIONTIME_500MS,
+                              TSL2591_INTEGRATIONTIME_600MS
+                             };
+
+/* Set the lightsensor timing */
+void TSL2591::setTiming(byte timing)
+{
+  if(timing < 0 || timing > 6)
+  {
+    return;
+  }
+  _timing = timing; //Update private timing var
+
+  tsl.setTiming(lightsensorTimings[timing]);
 }
 
 /* Calculates the current visible Lux value and then sends the sensor back to sleep */
@@ -109,12 +100,12 @@ float TSL2591::luxRead()
       }
       else //else decrease gain
       {
-        TSL2591::configureSensor(_gain - 1);
+        TSL2591::setGain(_gain - 1);
       }
     }
     else //else decrease timing
     {
-      TSL2591::configureSensor(_gain, _timing - 1);
+      TSL2591::setTiming(_timing - 1);
     }
     
     lum = tsl.getFullLuminosity(); //get new values after the changes
@@ -131,12 +122,12 @@ float TSL2591::luxRead()
       }
       else //else increase timing
       {
-        TSL2591::configureSensor(_gain, _timing + 1);
+        TSL2591::setTiming(_timing + 1);
       }
     }
     else //else increase gain
     {
-      TSL2591::configureSensor(_gain + 1);
+      TSL2591::setGain(_gain + 1);
     }
 
     lum = tsl.getFullLuminosity(); //get new values after the changes
@@ -144,7 +135,6 @@ float TSL2591::luxRead()
   }
 
   uint16_t ir = lum >> 16;
-  float lux = tsl.calculateLux(full, ir);
   
   return tsl.calculateLux(full, ir);
 }
