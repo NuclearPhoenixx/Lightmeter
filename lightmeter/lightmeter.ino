@@ -8,8 +8,7 @@
   * Option to use date (daily) as file name.
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
-  * Add option to set an upper lux limit for the lightmeter to reduce the amount of data
-  * Check if uSD card is plugged in before write with CD pin.
+  * Add option to set an upper lux limit for the lightmeter to reduce the amount of data written.
   * Finally implement FRAM buffering.
   * Implement customized TSL2591 lib.
   * TSL2591 timing + 100ms delay between failed measurements.
@@ -23,7 +22,8 @@
 #include "FRAM.h" //All the FRAM stuff
 #include "EXTRA.h" //All the extra functions
 
-#define SD_PIN 4 //pin connected to the CS pin of the uSD card
+#define SD_CD 7 //pin connected to the uSD card detect pin
+#define SD_CS 4 //pin connected to the uSD card CS pin
 #define FRAM_PIN 14 //pin connected to the CS pin of the FRAM chip
 
 /* BEGIN USER CONFIG */
@@ -50,6 +50,7 @@ String filePath; //this will hold the file path globally
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
+  pinMode(SD_CD, INPUT_PULLUP); //setup the uSD card detect pin
 
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
@@ -64,7 +65,7 @@ void setup()
   }
 
   // INIT SD CARD IF PRESENT
-  if(!SD.begin(SD_PIN))
+  if(!SD.begin(SD_CS))
   {
     while(1)
     {
@@ -150,7 +151,12 @@ void loop()
     
   }
   */
-  
+  if(!digitalRead(SD_CD)) //if there is physically no card inserted return
+  {
+    extra::signal_led(2); //flash no SD card error once
+    return;
+  }
+
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
   
@@ -176,7 +182,7 @@ void loop()
   if(dataFile)
   {
     serializeJson(data, dataFile); //append the compact data to the file
-    dataFile.flush(); //save the data to the file, needs up to 3x the power
+    dataFile.flush(); //physically save the data to the file, needs up to 3x the power though
   }
   else //if the file is not available, flash an error
   {
