@@ -49,6 +49,10 @@ TSL2591 Ambient Light Sensor:
 * 600M:1 Dynamic Range
 * Separate measurements of infrared, full-spectrum or human-visible light
 
+## Hardware Prototype
+
+To Do
+
 ## Software Features
 
 * Arbitrary time interval for measurements
@@ -56,6 +60,10 @@ TSL2591 Ambient Light Sensor:
 * Custom file name for the data log file(s)
 * Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of too large files
 * LED feedback about the status (e.g. errors)
+
+## Flash The Software
+
+To Do
 
 ## Comparison
 
