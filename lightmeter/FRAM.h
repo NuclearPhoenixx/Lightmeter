@@ -65,6 +65,8 @@ class FRAM_SPI {
   uint8_t getStatusRegister();
   void setStatusRegister(uint8_t value);
   void setAddressSize(uint8_t nAddressSize);
+  void bufferTimestamp(uint32_t addr, uint32_t timestamp);
+  void bufferLux(uint32_t addr, float lux);
 
  private:
   uint8_t SPItransfer(uint8_t x);

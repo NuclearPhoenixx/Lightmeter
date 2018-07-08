@@ -226,6 +226,22 @@ void FRAM_SPI::setAddressSize(uint8_t nAddressSize)
   _nAddressSizeBytes = nAddressSize;
 }
 
+/* Write the unix timestamp to the FRAM chip to buffer */
+void FRAM_SPI::bufferTimestamp(uint32_t addr, uint32_t timestamp)
+{
+  FRAM_SPI::writeEnable(true);
+  FRAM_SPI::write(addr, (uint8_t*)&timestamp, sizeof(uint32_t));
+  FRAM_SPI::writeEnable(false);
+}
+
+/* Write the lux measurement value to the FRAM chip to buffer */
+void FRAM_SPI::bufferLux(uint32_t addr, float lux)
+{
+  FRAM_SPI::writeEnable(true);
+  FRAM_SPI::write(addr, (uint8_t*)&lux, sizeof(float));
+  FRAM_SPI::writeEnable(false);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // P R I V A T E
 
