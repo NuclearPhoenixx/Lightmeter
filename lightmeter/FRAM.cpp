@@ -81,12 +81,12 @@ void FRAM_SPI::writeEnable (bool enable)
     @brief  Writes a byte at the specific FRAM address
 
     @params[in] addr
-                The 32-bit address to write to in FRAM memory
+                The 16-bit address to write to in FRAM memory
     @params[in] i2cAddr
                 The 8-bit value to write at framAddr
 */
 /**************************************************************************/
-void FRAM_SPI::write8 (uint32_t addr, uint8_t value)
+void FRAM_SPI::write8 (uint16_t addr, uint8_t value)
 {
   digitalWrite(_cs, LOW);
   SPItransfer(OPCODE_WRITE);
@@ -101,14 +101,14 @@ void FRAM_SPI::write8 (uint32_t addr, uint8_t value)
     @brief  Writes count bytes starting at the specific FRAM address
 
     @params[in] addr
-                The 32-bit address to write to in FRAM memory
+                The 16-bit address to write to in FRAM memory
     @params[in] values
                 The pointer to an array of 8-bit values to write starting at addr
     @params[in] count
                 The number of bytes to write
 */
 /**************************************************************************/
-void FRAM_SPI::write (uint32_t addr, const uint8_t *values, size_t count)
+void FRAM_SPI::write (uint16_t addr, const uint8_t *values, size_t count)
 {
   digitalWrite(_cs, LOW);
   SPItransfer(OPCODE_WRITE);
@@ -126,12 +126,12 @@ void FRAM_SPI::write (uint32_t addr, const uint8_t *values, size_t count)
     @brief  Reads an 8 bit value from the specified FRAM address
 
     @params[in] addr
-                The 32-bit address to read from in FRAM memory
+                The 16-bit address to read from in FRAM memory
 
     @returns    The 8-bit value retrieved at framAddr
 */
 /**************************************************************************/
-uint8_t FRAM_SPI::read8 (uint32_t addr)
+uint8_t FRAM_SPI::read8 (uint16_t addr)
 {
   digitalWrite(_cs, LOW);
   SPItransfer(OPCODE_READ);
@@ -146,14 +146,14 @@ uint8_t FRAM_SPI::read8 (uint32_t addr)
     @brief  Read count bytes starting at the specific FRAM address
 
     @params[in] addr
-                The 32-bit address to write to in FRAM memory
+                The 16-bit address to write to in FRAM memory
     @params[out] values
                 The pointer to an array of 8-bit values to read starting at addr
     @params[in] count
                 The number of bytes to read
 */
 /**************************************************************************/
-void FRAM_SPI::read (uint32_t addr, uint8_t *values, size_t count)
+void FRAM_SPI::read (uint16_t addr, uint8_t *values, size_t count)
 {
   digitalWrite(_cs, LOW);
   SPItransfer(OPCODE_READ);
@@ -226,8 +226,11 @@ void FRAM_SPI::setAddressSize(uint8_t nAddressSize)
   _nAddressSizeBytes = nAddressSize;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Buffer data
+
 /* Write the unix timestamp to the FRAM chip to buffer */
-void FRAM_SPI::bufferTimestamp(uint32_t addr, uint32_t timestamp)
+void FRAM_SPI::bufferTimestamp(uint16_t addr, uint32_t timestamp)
 {
   FRAM_SPI::writeEnable(true);
   FRAM_SPI::write(addr, (uint8_t*)&timestamp, sizeof(uint32_t));
@@ -235,7 +238,7 @@ void FRAM_SPI::bufferTimestamp(uint32_t addr, uint32_t timestamp)
 }
 
 /* Write the lux measurement value to the FRAM chip to buffer */
-void FRAM_SPI::bufferLux(uint32_t addr, float lux)
+void FRAM_SPI::bufferLux(uint16_t addr, float lux)
 {
   FRAM_SPI::writeEnable(true);
   FRAM_SPI::write(addr, (uint8_t*)&lux, sizeof(float));
@@ -250,7 +253,7 @@ uint8_t FRAM_SPI::SPItransfer(uint8_t x)
   return SPI.transfer(x);
 }
 
-void FRAM_SPI::writeAddress(uint32_t addr)
+void FRAM_SPI::writeAddress(uint16_t addr)
 {
   if (_nAddressSizeBytes>3)
     SPItransfer((uint8_t)(addr >> 24));

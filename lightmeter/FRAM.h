@@ -57,20 +57,20 @@ class FRAM_SPI {
   boolean begin();
   boolean begin(int8_t cs, uint8_t nAddressSizeBytes);
   void writeEnable(bool enable);
-  void write8(uint32_t addr, uint8_t value);
-  void write(uint32_t addr, const uint8_t *values, size_t count);
-  uint8_t read8(uint32_t addr);
-  void read(uint32_t addr, uint8_t *values, size_t count);
+  void write8(uint16_t addr, uint8_t value);
+  void write(uint16_t addr, const uint8_t *values, size_t count);
+  uint8_t read8(uint16_t addr);
+  void read(uint16_t addr, uint8_t *values, size_t count);
   void getDeviceID(uint8_t *manufacturerID, uint16_t *productID);
   uint8_t getStatusRegister();
   void setStatusRegister(uint8_t value);
   void setAddressSize(uint8_t nAddressSize);
-  void bufferTimestamp(uint32_t addr, uint32_t timestamp);
-  void bufferLux(uint32_t addr, float lux);
+  void bufferTimestamp(uint16_t addr, uint32_t timestamp);
+  void bufferLux(uint16_t addr, float lux);
 
  private:
   uint8_t SPItransfer(uint8_t x);
-  void writeAddress(uint32_t addr);
+  void writeAddress(uint16_t addr);
 
   boolean _framInitialised;
   uint8_t _nAddressSizeBytes;

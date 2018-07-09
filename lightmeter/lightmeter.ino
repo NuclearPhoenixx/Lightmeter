@@ -43,8 +43,8 @@ FRAM_SPI fram = FRAM_SPI(FRAM_PIN);
 File dataFile; //global variable that will hold the data file
 byte fileNum = 0; //global number of file
 String filePath; //this will hold the file path globally
-//byte lastAddrByte = 0; //this will hold the last address byte that has been written to FRAM
-//byte bufferCounter = 0; //global number of buffered data points
+uint16_t lastAddr = 0; //this will hold the last used 16-bit FRAM address
+byte bufferCounter = 0; //global number of buffered data points
 
 /* ARDUINO SETUP FUNCTION */
 void setup()
@@ -105,7 +105,9 @@ void setup()
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
 
   //grab the last saved data point address from FRAM
-  //lastAddrByte = fram.read8(lastAddrByte);
+  uint8_t values; //array that will hold all the pieces of the address
+  fram.read(0x0, values, 2);
+  lastAddr = (uint16_t*)values; //re-combine 8-bit array to 16-bit address
   
   // FLASH 5x REALLY QUICKLY TO SIGNAL OK
   for(byte x = 0; x < 5; x++)
