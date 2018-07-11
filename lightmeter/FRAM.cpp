@@ -227,22 +227,34 @@ void FRAM_SPI::setAddressSize(uint8_t nAddressSize)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Buffer data
+// Buffer data functions
 
-/* Write the unix timestamp to the FRAM chip to buffer */
-void FRAM_SPI::bufferTimestamp(uint16_t addr, uint32_t timestamp)
+/* Automatically save write the new lastAddr to the FRAM chip' first bytes */
+void FRAM_SPI::saveLastAddr(uint16_t addr)
 {
   FRAM_SPI::writeEnable(true);
-  FRAM_SPI::write(addr, (uint8_t*)&timestamp, sizeof(uint32_t));
+  FRAM_SPI::write(0x0, addr, 2);
   FRAM_SPI::writeEnable(false);
 }
 
+/* Write the unix timestamp to the FRAM chip to buffer */
+uint16_t FRAM_SPI::bufferTimestamp(uint16_t addr, uint32_t timestamp)
+{
+  FRAM_SPI::writeEnable(true);
+  FRAM_SPI::write(addr, (uint8_t*)&timestamp, 4);
+  FRAM_SPI::writeEnable(false);
+
+  return addr + 5; //return old address + used bytes (4) + 1 to get new usable address
+}
+
 /* Write the lux measurement value to the FRAM chip to buffer */
-void FRAM_SPI::bufferLux(uint16_t addr, float lux)
+uint16_t FRAM_SPI::bufferLux(uint16_t addr, float lux)
 {
   FRAM_SPI::writeEnable(true);
   FRAM_SPI::write(addr, (uint8_t*)&lux, sizeof(float));
   FRAM_SPI::writeEnable(false);
+  
+  return addr + sizeof(float) +1; //return old address + used bytes + 1 to get new usable address
 }
 
 ////////////////////////////////////////////////////////////////////////////////

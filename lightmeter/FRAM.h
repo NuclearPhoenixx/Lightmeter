@@ -33,6 +33,12 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+/*
+ * TODO:
+ *  * Update sizeof(float) to 4 Bytes because Arduino implements floats as 32-bit info.
+ */
+
 #ifndef __FRAM_H_
 #define __FRAM_H_
 
@@ -65,8 +71,9 @@ class FRAM_SPI {
   uint8_t getStatusRegister();
   void setStatusRegister(uint8_t value);
   void setAddressSize(uint8_t nAddressSize);
-  void bufferTimestamp(uint16_t addr, uint32_t timestamp);
-  void bufferLux(uint16_t addr, float lux);
+  void saveLastAddr(uint16_t addr);
+  uint16_t bufferTimestamp(uint16_t addr, uint32_t timestamp);
+  uint16_t bufferLux(uint16_t addr, float lux);
 
  private:
   uint8_t SPItransfer(uint8_t x);

@@ -1,7 +1,7 @@
 /*
   All-In-One Arduino Lightmeter
 
-  FIRMWARE VERSION 0.1, INCOMPLETE PREVIEW VERSION
+  FIRMWARE VERSION 0.2, INCOMPLETE PREVIEW VERSION
 
   TO DO:
   * Check what happens if the SD card space is full.
@@ -9,8 +9,6 @@
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
   * Add option to set an upper lux limit for the lightmeter to reduce the amount of data written.
-  * Finally implement FRAM buffering.
-  * Implement customized TSL2591 lib.
   * TSL2591 timing + 100ms delay between failed measurements.
   * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
 */
@@ -124,47 +122,52 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
+  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
+  
   float lux = lightsensor.luxRead(); //get lux values
   byte tries = 0; //counter for tries
 
-  while(lux <= 0) //check if lux value is valid
+  while(lux <= 0.) //check if lux value is valid
   {
     if(tries >= MAX_TRIES)
     {
-      lux = 0.0; //set lux to 0 to signal a problem
+      lux = -1.; //set lux to -1 to signal a problem
       break;
     }
     extra::sleep(600); //sleep for 600ms (worst case to let the lightsensor calm down)
     lux = lightsensor.luxRead();
     tries++;
   }
-
+  
   //Serial.println(lux,6); //DEBUG LUX FOR CALIBRATION
-   
-  //DateTime now = rtc.now();
-  uint32_t timestamp = rtc.now().unixtime(); //get unix timestamp
+  
+  //get latest unix timestamp
+  uint32_t timestamp = rtc.now().unixtime();
 
   // buffer data, else write everything to uSD card
-  /*
-  if(bufferCounter <= DATA_BUFFER){
+  if(bufferCounter <= DATA_BUFFER)
+  {
+    lastAddr = fram.bufferTimestamp(lastAddr, timestamp); //buffer both timestamp and lux value
+    lastAddr = fram.bufferLux(lastAddr, lux);
+
+    fram.saveLastAddr(lastAddr); //save the last used address to the FRAM chip
     bufferCounter++;
 
-      T O D O
-    
+    return; //after buffering exit
   }
-  */
+  
   if(!digitalRead(SD_CD)) //if there is physically no card inserted return
   {
     extra::signal_led(2); //flash no SD card error once
     return;
   }
-
+  
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
   
   // create new json object that will contain all the logged data
   JsonObject data = jsonDoc.to<JsonObject>();
-
+  
   data[F("unixtime")] = timestamp; //input current RTC unixtime
   data[F("lux")] = lux; //input lux value
   
@@ -179,7 +182,7 @@ void loop()
     dataFile = SD.open(filePath, FILE_WRITE);
     future_size = dataFile.size() + measureJson(data);
   }
-
+  
   //if the data file is available, write the data to it
   if(dataFile)
   {
@@ -190,6 +193,5 @@ void loop()
   {
     extra::signal_led(3);
   }
-
-  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
+

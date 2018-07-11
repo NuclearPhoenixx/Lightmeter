@@ -3,6 +3,11 @@
  * Changes made to work best for my lightmeter project.
 */
 
+/*
+ * TODO:
+ *  * Remove all the datetime stuff except the unixtime.
+ */
+
 #ifndef _RTC_H_
 #define _RTC_H_
 

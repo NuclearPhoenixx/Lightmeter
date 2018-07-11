@@ -1,5 +1,11 @@
 /* This contains all the functions for the TSL2591 light sensor */
 
+/*
+ * TODO:
+ *  * Use my slightly modified version of the Adafruit TSL2591 Library
+ *    and further customize it.
+ */
+
 #ifndef LIGHTSENSOR_H
 #define LIGHTSENSOR_H
 
