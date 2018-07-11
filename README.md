@@ -16,27 +16,19 @@ If you're more interested about this please head to the [comparison](https://git
 
 ## Parts list
 
-This list refers to the current prototype; only non-changeable parts listed for now:
+This list refers to the current prototype; only most important parts listed:
 
 * ATMEGA328P @ 8Mhz, 32KB flash & 2KB SRAM
-* EXAR SPX3819M5-L-3-3/TR 3.3V 500mA LDO Voltage Regulator
 * Maxim Integrated DS3231SN#T&R RTC
-* [TSL2591 High Dynamic Range Digital Light Sensor from Adafruit](https://learn.adafruit.com/adafruit-tsl2591)
+* [TSL2591 High Dynamic Range Digital Light Sensor (from Adafruit for prototyping)](https://learn.adafruit.com/adafruit-tsl2591)
 
 ## Hardware Features
 
 ATMEGA328P Microcontroller:
-* Clocked at 8Mhz
+* Clocked @ 8Mhz
 * 32KB flash memory
 * 2KB SRAM
-* Low Power
-
-SPX3819 Regulator:
-* Low-noise LDO voltage regulator
-* 2.5 - 16V input
-* 3.3V 500mA output
-* Low quiescent current: 90μA
-* Low dropout: 340mV at full load
+* Specifically Low Power
 
 DS3231SN RTC:
 * Leap-Year compensation up to 2100
@@ -71,7 +63,7 @@ Welcome to everyone's favorite section: the comparison!
 
 I try to compare it as objectively as possible, but please bear in mind that this is never fully possible. If I forgot something important, please let me know and write an issue or pull request!
 
-Also note that this is an all-in-one instrument prototype and not a sensor on it's own. This means that the board is obviously more fault-prone and I also don't have a nice weather-proof case.
+Also note that this is an all-in-one instrument prototype and not a sensor on it's own. This means that the board is obviously more fault-prone and I also don't have a nice weather-proof case. Furthermore, the board (i.e. the software) needs to be calibrated for exact measurements. This might be harder than expected and needs to be done empiricly.
 
 I'm basing this comparison on the specs that I found on the official [data sheet](http://hms.sternhell.at/lightwiki/images/3/30/Lightmeter_specifications.pdf) and a [document](http://hms.sternhell.at/lightwiki/images/a/a7/Mueller_Low_Cost_Luxmeter.pdf) published by Dr. Günther Wuchter and André Müller. However, these documents are rather old and there already are like 3 newer generations of the lightmeter, on which I didn't find any technical information. If you found something, please let me know!
 
