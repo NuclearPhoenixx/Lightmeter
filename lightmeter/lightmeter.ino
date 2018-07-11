@@ -161,6 +161,15 @@ void loop()
     extra::signal_led(2); //flash no SD card error once
     return;
   }
+
+  /* TODO
+  for(each buffered datapoint)
+  {
+    //do the stuff below
+
+    bufferCounter = 0; //reset bufferCounter back to 0
+  }
+  */
   
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
