@@ -14,7 +14,6 @@ void extra::signal_led(byte flashes)
    *  5: NO RTC
    *  6: OTHER MISC ERROR
    *  7: RTC TIME NOT SET
-   *  8: NO FRAM CHIP FOUND
    */
   extra::sleep(800); //800ms sleep delay before LED status signaling
   
