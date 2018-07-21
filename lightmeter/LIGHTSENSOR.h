@@ -4,6 +4,8 @@
  * TODO:
  *  * Use my slightly modified version of the Adafruit TSL2591 Library
  *    and further customize it.
+ *  * Fix infinit loop if lux value is out of scope.
+ *  * Increase lux return value consistency.
  */
 
 #ifndef LIGHTSENSOR_H

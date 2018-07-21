@@ -1,7 +1,7 @@
 /*
   All-In-One Arduino Lightmeter
 
-  FIRMWARE VERSION 1.0, PRE-RELEASE
+  FIRMWARE VERSION 1.1, PRE-RELEASE
 
   TO DO:
   * Check what happens if the SD card space is full.
@@ -11,6 +11,7 @@
   * Add option to set an upper lux limit for the lightmeter to reduce the amount of data written.
   * TSL2591 timing + 100ms delay between failed measurements.
   * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
+  * SD_CD pin not working correctly?
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
@@ -28,7 +29,7 @@
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const uint16_t M_INTERVAL = 5000; //time between measurements, in ms
+const uint16_t M_INTERVAL = 1000; //time between measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
 /*  END USER CONFIG
  * ===================
@@ -46,10 +47,10 @@ void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
   pinMode(SD_CD, INPUT_PULLUP); //setup the uSD card detect pin
-
+  
   /* Display some basic information on this sensor
   lightsensor.displaySensorDetails(); */
-
+  
   // INIT TSL2591 IF PRESENT
   if(!lightsensor.begin())
   {
@@ -58,7 +59,7 @@ void setup()
       extra::signal_led(1);
     }
   }
-
+  
   // INIT SD CARD IF PRESENT
   if(!SD.begin(SD_CS))
   {
@@ -67,7 +68,7 @@ void setup()
       extra::signal_led(2);
     }
   }
-
+  
   //INIT RTC
   if(!rtc.begin())
   {
@@ -98,7 +99,7 @@ void setup()
     digitalWrite(LED_BUILTIN, LOW);
     delay(100);
   }
-  
+
   //Serial.begin(9600); //DEBUGGING SERIAL
 }
 
@@ -114,13 +115,8 @@ void loop()
   float lux = lightsensor.luxRead(); //get lux values
   byte tries = 0; //counter for tries
   
-  while(lux <= 0.) //check if lux value is valid
+  while(lux <= 0. && tries < MAX_TRIES) //check if lux value is valid
   {
-    if(tries >= MAX_TRIES)
-    {
-      lux = -1.; //set lux to -1 to signal a problem
-      break;
-    }
     extra::sleep(600); //sleep for 600ms (worst case to let the lightsensor calm down)
     lux = lightsensor.luxRead();
     tries++;

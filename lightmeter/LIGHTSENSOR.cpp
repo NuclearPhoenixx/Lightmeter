@@ -90,7 +90,7 @@ float TSL2591::luxRead()
   uint32_t lum = tsl.getFullLuminosity();
   uint16_t full = lum & 0xFFFF;
   
-  while(full > 62535) //decrease timing or gain if close to overflow (65535)
+  while(full >= 65534) //decrease timing or gain if close to overflowing (65535)
   {
     if(_timing == 0) //if timing already at minimum decrease gain
     {
@@ -107,12 +107,13 @@ float TSL2591::luxRead()
     {
       TSL2591::setTiming(_timing - 1);
     }
-    
+
+    delay(600); //calm down lightsensor, worst case length
     lum = tsl.getFullLuminosity(); //get new values after the changes
     full = lum & 0xFFFF;
   }
 
-  while(full < 1000) //increase gain or timing if close to 0
+  while(full <= 1) //increase gain or timing if close to detecting nothing
   {
     if(_gain == 3) //if gain is already max increase the timing
     {
@@ -130,6 +131,7 @@ float TSL2591::luxRead()
       TSL2591::setGain(_gain + 1);
     }
 
+    delay(600); //calm down lightsensor, worst case length
     lum = tsl.getFullLuminosity(); //get new values after the changes
     full = lum & 0xFFFF;
   }
