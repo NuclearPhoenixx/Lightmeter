@@ -84,7 +84,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
 | Power Supply | 5V | 2.5V - 16V |
-| Max Power Consumption | 10mA + logging hardware | ~30mA writing, depends on your card; XX mA buffering; 0.38mA standby |
+| Max Power Consumption | 10mA + logging hardware | 6mA active + your μSD's power; 0.38mA standby |
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi and drivers | μSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | μSD Card |
 | Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
