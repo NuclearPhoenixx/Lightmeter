@@ -2,7 +2,7 @@
 
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
-This instrument is based on a micro-controller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the SD Card the board autonomously measures the current light levels in lux and saves them together with the time from an ultra-precise RTC to a file on the SD Card in easy-to-work-with JSON format. No other requirements.
+This instrument is based on a micro-controller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the SD Card the board autonomously measures the current light levels in lux and saves them together with the time from an ultra-precise RTC to a file on the SD Card in easy-to-work-with JSON format (optional temperature logging available). No other requirements.
 
 This project was inspired by the Kuffner-Sternwarte Lightmeter and aims to be a more straightforward and easier to use all-in-one instrument. More info about the [idea](https://github.com/Phoenix1747/Lightmeter#idea) is below.
 
@@ -33,6 +33,7 @@ ATMEGA328P Microcontroller:
 DS3231SN RTC:
 * Leap-Year compensation up to 2100
 * Integrated temperature-compensated crystal oscillator (TCXO) and crystal
+* Temperature sensor output (± 3°C, 0.25°C resolution)
 * Accuracy ±3.5ppm from -40°C to +85 °C
 * Years of precise timekeeping
 
@@ -43,19 +44,25 @@ TSL2591 Ambient Light Sensor:
 
 ## Hardware Prototype
 
-To Do
+To Do: Waiting for the new version of the protoype.
 
 ## Software Features
 
 * Arbitrary time interval for measurements
-* FAT32 filesystem for uSD Card
+* FAT32 filesystem for any uSD Card
 * Custom file name for the data log file(s)
 * Custom max file size. If the size limit is reached, the system will continue to log to another file appending a number to the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of too large files
+* JSON formatted data (see [data structure](https://github.com/Phoenix1747/Lightmeter#data-structure))
 * LED feedback about the status (e.g. errors)
+* Automatic retries, gain/timing scaling and error correction
 
-## Flash The Software
+## Preparing The Lightmeter
 
-To Do
+To Do: This will explain how to flash the software using the Arduino IDE and an ICSP programmer such as the USBasp. In addition, this will show you how to prepare your uSD card.
+
+## Data Structure
+
+To Do: This will show you how the JSON data is formatted and saved onto the uSD card so that you know how to evaluate the data.
 
 ## Comparison
 
