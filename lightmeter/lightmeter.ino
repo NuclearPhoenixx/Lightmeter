@@ -12,6 +12,7 @@
   * TSL2591 timing + 100ms delay between failed measurements.
   * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
   * SD_CD pin not working correctly?
+  * Add optional temperature logging capabilities.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
