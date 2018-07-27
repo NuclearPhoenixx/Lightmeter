@@ -4,7 +4,7 @@
  * TODO:
  *  * Use my slightly modified version of the Adafruit TSL2591 Library
  *    and further customize it.
- *  * Fix infinit loop if lux value is out of scope.
+ *  * Use MAX_TRIES from settings in the luxRead() function to escape infinite loops.
  *  * Increase lux return value consistency.
  */
 
