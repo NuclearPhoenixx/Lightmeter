@@ -1,4 +1,6 @@
-# Lightmeter
+# Lightmeter 
+
+![GitHub issues](https://img.shields.io/github/issues/phoenix1747/lightmeter.svg?style=for-the-badge) ![GitHub pull requests](https://img.shields.io/github/issues-pr/phoenix1747/lightmeter.svg?style=for-the-badge) ![GitHub](https://img.shields.io/github/license/phoenix1747/lightmeter.svg?style=for-the-badge)
 
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
