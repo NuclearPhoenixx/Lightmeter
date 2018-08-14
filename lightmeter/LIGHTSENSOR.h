@@ -6,6 +6,7 @@
  *    and further customize it.
  *  * Use MAX_TRIES from settings in the luxRead() function to escape infinite loops.
  *  * Increase lux return value consistency.
+ *  * Wait after activating sensor for at least integration time.
  */
 
 #ifndef LIGHTSENSOR_H
