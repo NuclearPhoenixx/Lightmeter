@@ -1,16 +1,13 @@
 /*
   All-In-One Arduino Lightmeter
 
-  FIRMWARE VERSION 1.1, PRE-RELEASE
+  FIRMWARE VERSION 1.2, PRE-RELEASE
 
   TO DO:
   * Check what happens if the SD card space is full.
   * Option to use date (daily) as file name.
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
-  * Add option to set an upper lux limit for the lightmeter to reduce the amount of data written.
-  * TSL2591 timing + 100ms delay between failed measurements.
-  * Subtract active time from M_INTERVAL time between measurements to get an accurate interval.
   * Add optional temperature logging capabilities.
 */
 #include <SD.h> //SD Card
@@ -29,13 +26,17 @@
 const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
 const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
 const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
-const uint16_t M_INTERVAL = 1000; //time between measurements, in ms
+
+const uint16_t M_INTERVAL = 5000; //time between single measurements, in ms
 const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
+
+const bool EN_LIMIT = true; //enable upper lux limit to reduce the amount of data written
+const uint32_t LUX_LIMIT = 100; //if EN_LIMIT is true, this is the upper limit the lightmeter stops recording, in lx
 /*  END USER CONFIG
  * ===================
 */
 
-TSL2591 lightsensor = TSL2591(1, 2); //create the objects for my classes
+TSL2591 lightsensor = TSL2591(1, 2, MAX_TRIES); //create the objects for my classes
 RTC_DS3231 rtc;
 
 File dataFile; //global variable that will hold the data file
@@ -106,6 +107,8 @@ void setup()
 /* MAIN LOOP */
 void loop()
 {
+  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
+  
   if(digitalRead(SD_CD)) //if there is physically no card inserted return
   {
     extra::signal_led(2); //flash no SD card error once
@@ -113,19 +116,15 @@ void loop()
   }
   
   float lux = lightsensor.luxRead(); //get lux values
-  byte tries = 0; //counter for tries
-  
-  while(lux <= 0. && tries < MAX_TRIES) //check if lux value is valid
+
+  if(EN_LIMIT && lux >= LUX_LIMIT)
   {
-    extra::sleep(600); //sleep for 600ms (worst case to let the lightsensor calm down)
-    lux = lightsensor.luxRead();
-    tries++;
+    return; //if lux limit enabled and lux value under threshold then just return
   }
-    
+
+  uint32_t timestamp = rtc.now().unixtime(); //get latest unix timestamp
+  
   //Serial.println(lux,6); //DEBUG LUX FOR CALIBRATION
-    
-  //get latest unix timestamp
-  uint32_t timestamp = rtc.now().unixtime();
   
   // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
   StaticJsonDocument<40> jsonDoc;
@@ -158,7 +157,5 @@ void loop()
   {
     extra::signal_led(3);
   }
-  
-  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
 }
 

@@ -1,15 +1,16 @@
 /* This contains all the functions for the TSL2591 light sensor */
 
 #include "LIGHTSENSOR.h" // include my header file
-#include <Adafruit_TSL2591.h> //TSL2591 lib
+#include "TSL2591.h" //TSL2591 lib
 
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); // pass in a number for the sensor identifier (for your use later)
 
 /* DEF CONSTRUCTOR */
-TSL2591::TSL2591(byte gain, byte timing)
+TSL2591::TSL2591(byte gain, byte timing, byte tries)
 {
   _gain = gain;
   _timing = timing;
+  _max_tries = tries;
 }
 
 /* SETUP FUNCTION */
@@ -89,8 +90,10 @@ float TSL2591::luxRead()
   // That way you can do whatever math and comparisons you want!
   uint32_t lum = tsl.getFullLuminosity();
   uint16_t full = lum & 0xFFFF;
+
+  byte tries = 0; //re-try var for measurement corrections
   
-  while(full >= 65534) //decrease timing or gain if close to overflowing (65535)
+  while(full >= 65534 && tries < _max_tries) //decrease timing or gain if close to overflowing (65535)
   {
     if(_timing == 0) //if timing already at minimum decrease gain
     {
@@ -107,13 +110,13 @@ float TSL2591::luxRead()
     {
       TSL2591::setTiming(_timing - 1);
     }
-
-    delay(600); //calm down lightsensor, worst case length
+    
     lum = tsl.getFullLuminosity(); //get new values after the changes
     full = lum & 0xFFFF;
+    tries++;
   }
 
-  while(full <= 1) //increase gain or timing if close to detecting nothing
+  while(full <= 1 && tries < _max_tries) //increase gain or timing if close to detecting nothing
   {
     if(_gain == 3) //if gain is already max increase the timing
     {
@@ -131,9 +134,9 @@ float TSL2591::luxRead()
       TSL2591::setGain(_gain + 1);
     }
 
-    delay(600); //calm down lightsensor, worst case length
     lum = tsl.getFullLuminosity(); //get new values after the changes
     full = lum & 0xFFFF;
+    tries++;
   }
 
   uint16_t ir = lum >> 16;

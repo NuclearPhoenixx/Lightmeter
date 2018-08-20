@@ -3,11 +3,6 @@
  * Changes made to work best for my lightmeter project.
 */
 
-/*
- * TODO:
- *  * Add temperature output and option to additionally log it.
- */
-
 #ifndef _RTC_H_
 #define _RTC_H_
 

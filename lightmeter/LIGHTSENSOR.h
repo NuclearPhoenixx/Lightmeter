@@ -1,14 +1,5 @@
 /* This contains all the functions for the TSL2591 light sensor */
 
-/*
- * TODO:
- *  * Use my slightly modified version of the Adafruit TSL2591 Library
- *    and further customize it.
- *  * Use MAX_TRIES from settings in the luxRead() function to escape infinite loops.
- *  * Increase lux return value consistency.
- *  * Wait after activating sensor for at least integration time.
- */
-
 #ifndef LIGHTSENSOR_H
 #define LIGHTSENSOR_H
 
@@ -17,7 +8,7 @@
 class TSL2591
 {
   public:
-    TSL2591(byte gain, byte timing); //def constructor
+    TSL2591(byte gain, byte timing, byte tries); //def constructor
     bool begin(); //setup
   
     void displaySensorDetails();
@@ -28,8 +19,9 @@ class TSL2591
     byte getTiming();
     
   private:
-    char _gain; //gain and timing for the first config
-    char _timing;
+    byte _gain; //gain and timing for the first config
+    byte _timing;
+    byte _max_tries;
 };
 
 #endif
