@@ -3,21 +3,12 @@
 #include "EXTRA.h" // include my header file
 #include <Adafruit_SleepyDog.h> //For power down sleep mode
 
-/* SIGNAL LED FUNCTION FOR ERRORS AND USER INTERFACE  */
-void extra::signal_led(byte flashes)
+/* FLASH THE LED 3 TIMES TO INDICATE A PROBLEM  */
+void extra::led_flash()
 {
-  /* ERROR/SIGNAL FLASHES:
-   *  1: NO LIGHTSENSOR
-   *  2: NO SD CARD
-   *  3: FILE WRITE ERROR
-   *  4: SD FILESYSTEM ERROR
-   *  5: NO RTC
-   *  6: OTHER MISC ERROR
-   *  7: RTC TIME NOT SET
-   */
-  extra::sleep(800); //800ms sleep delay before LED status signaling
+  extra::sleep(800); //800ms sleep delay before LED flash
   
-  for(byte x = 0; x < flashes; x++)
+  for(byte x = 0; x < 3; x++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);

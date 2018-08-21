@@ -7,7 +7,7 @@
 
 namespace extra
 {
-  void signal_led(byte flashes);
+  void led_flash();
   void sleep(uint32_t sTime);
 }
 

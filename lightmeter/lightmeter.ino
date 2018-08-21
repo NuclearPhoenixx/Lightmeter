@@ -11,11 +11,12 @@
   * Open up settings in settings file (JSON) so that you don't need to reflash
       the whole thing if you want to change anything.
   * Add optional temperature logging capabilities.
+  * Create rudimentary error log on SD card.
 */
 #include <SD.h> //SD Card
 #include <ArduinoJson.h> //For JSON data formatting
+#include <RTClib.h> //DS3231 library
 
-#include "RTC.h" //My DS3231 stuff
 #include "LIGHTSENSOR.h" //My TSL2591 stuff
 #include "EXTRA.h" //All the extra functions
 
@@ -38,8 +39,8 @@ const uint32_t LUX_LIMIT = 100; //if EN_LIMIT is true, this is the upper limit t
  * ===================
 */
 
-TSL2591 lightsensor = TSL2591(1, 2, MAX_TRIES); //create the objects for my classes
-RTC_DS3231 rtc;
+TSL2591 lightsensor = TSL2591(1, 2, MAX_TRIES); //create lightsensor object
+RTC_DS3231 rtc; //create rtc object
 
 File dataFile; //global variable that will hold the data file
 byte fileNum = 0; //global number of file
@@ -59,7 +60,7 @@ void setup()
   {
     while(1)
     {
-      extra::signal_led(1);
+      extra::led_flash();
     }
   }
   
@@ -68,16 +69,16 @@ void setup()
   {
     while(1)
     {
-      extra::signal_led(2);
+      extra::led_flash();
     }
   }
-  
+
   //INIT RTC
   if(!rtc.begin())
   {
     while(1)
     {
-      extra::signal_led(5);
+      extra::led_flash();
     }
   }
   
@@ -86,7 +87,7 @@ void setup()
   {
     while(1)
     {
-      extra::signal_led(7);
+      extra::led_flash();
     }
   }
   
@@ -94,14 +95,8 @@ void setup()
   filePath = FILE_NAME + "." + FILE_EXTENSION;
   dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
   
-  // FLASH 5x REALLY QUICKLY TO SIGNAL OK
-  for(byte x = 0; x < 5; x++)
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(100);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(100);
-  }
+  //FLASH LED AT STARTUP TO TEST IT
+  extra::led_flash();
 
   //Serial.begin(9600); //DEBUGGING SERIAL
 }
@@ -113,7 +108,7 @@ void loop()
   
   if(digitalRead(SD_CD)) //if there is physically no card inserted return
   {
-    extra::signal_led(2); //flash no SD card error once
+    extra::led_flash(); //flash no SD card error once
     return;
   }
   
@@ -157,7 +152,7 @@ void loop()
   }
   else //if the file is not available, flash an error
   {
-    extra::signal_led(3);
+    extra::led_flash();
   }
 }
 
