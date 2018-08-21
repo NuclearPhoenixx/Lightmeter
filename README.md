@@ -66,6 +66,10 @@ To Do: This will explain how to flash the software using the Arduino IDE and an 
 
 To Do: This will show you how the JSON data is formatted and saved onto the uSD card so that you know how to evaluate the data.
 
+## Settings Config
+
+To Do: This will be the documentation about all the possible config options.
+
 ## Comparison
 
 Welcome to everyone's favorite section: the comparison!
