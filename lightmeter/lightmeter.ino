@@ -1,7 +1,9 @@
 /*
-  All-In-One Arduino Lightmeter
-
-  FIRMWARE VERSION 1.2, PRE-RELEASE
+  All-in-One Arduino-compatible Lightmeter by Phoenix1747.
+  https://github.com/Phoenix1747/Lightmeter
+  
+  THIS PROJECT IS LICENSED UNDER GPL-3.0, FEEL FREE TO USE IT
+  ACCORDING TO THE LICENSE. HAVE FUN!
 
   TO DO:
   * Check what happens if the SD card space is full.
