@@ -22,6 +22,7 @@
 
 #define SD_CD 7 //pin connected to the uSD card detect pin
 #define SD_CS 4 //pin connected to the uSD card CS pin
+#define LED_BUILTIN 2 //pin for the LED
 
 /* ===================
  *  BEGIN USER CONFIG

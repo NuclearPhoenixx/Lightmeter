@@ -6,7 +6,7 @@
 /* FLASH THE LED 3 TIMES TO INDICATE A PROBLEM  */
 void extra::led_flash()
 {
-  extra::sleep(800); //800ms sleep delay before LED flash
+  delay(800); //800ms sleep delay before LED flash
   
   for(byte x = 0; x < 3; x++)
   {
