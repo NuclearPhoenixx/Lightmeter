@@ -3,6 +3,8 @@
 #include "EXTRA.h" // include my header file
 #include <Adafruit_SleepyDog.h> //For power down sleep mode
 
+#define LED_BUILTIN 2 //pin for the LED
+
 /* FLASH THE LED 3 TIMES TO INDICATE A PROBLEM  */
 void extra::led_flash()
 {
