@@ -89,7 +89,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |
 | Weight | 370g | - |
-| Power Supply | 5V | 2.5V - 16V |
+| Power Supply | 5V | 3.5V - 6V |
 | Max Power Consumption | 10mA + logging hardware | 5mA active + μSD active; 0.23mA standby + μSD standby |
 | Requirements | Logging hardware, e.g. PC/Raspberry Pi and drivers | μSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | μSD Card |
