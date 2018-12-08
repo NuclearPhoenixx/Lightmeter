@@ -2,6 +2,8 @@
 
 ![GitHub issues](https://img.shields.io/github/issues/phoenix1747/lightmeter.svg?style=for-the-badge) ![GitHub pull requests](https://img.shields.io/github/issues-pr/phoenix1747/lightmeter.svg?style=for-the-badge) ![GitHub](https://img.shields.io/github/license/phoenix1747/lightmeter.svg?style=for-the-badge)
 
+**This is still work in progress, please head to the [dev branch](https://github.com/Phoenix1747/Lightmeter/tree/dev) for the latest resources!**
+
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
 This instrument is based on a micro-controller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the SD Card the board autonomously measures the current light levels in lux and saves them together with the time from an ultra-precise RTC to a file on the SD Card in easy-to-work-with JSON format (optional temperature logging available). No other requirements.
