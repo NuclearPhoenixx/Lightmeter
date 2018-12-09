@@ -17,6 +17,7 @@
 #define SD_CD 7 //Pin connected to the uSD card detect pin
 #define SD_CS 4 //Pin connected to the uSD card CS pin
 #define LED_BUILTIN 2 //Pin for the status LED
+#define TSL2591_LUX_DF 650.0F //Lux cooefficient for calibration
 
 /* == SETTINGS == */
 const String FILE_NAME = "data"; //Filename for the data file; 8 chars or less (FAT32 limit)
