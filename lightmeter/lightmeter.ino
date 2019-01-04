@@ -12,46 +12,46 @@
 #include <RTClib.h>
 #include <Adafruit_TSL2591.h>
 
-#include "Support.h" //All the extra needed functionality
+#include "Support.h" //All the extra needed functionality.
 
-#define SD_CD 7 //Pin connected to the uSD card detect pin
-#define SD_CS 4 //Pin connected to the uSD card CS pin
-#define LED_BUILTIN 2 //Pin for the status LED
-#define TSL2591_LUX_DF 650.0F //Lux cooefficient for calibration
+#define SD_CD 7 //Pin connected to the uSD card detect pin.
+#define SD_CS 4 //Pin connected to the uSD card CS pin.
+#define LED_BUILTIN 2 //Pin for the status LED.
+#define TSL2591_LUX_DF 650.0F //Lux cooefficient for calibration.
 
 /* == SETTINGS == */
-const String FILE_NAME = "data"; //Filename for the data file; 8 chars or less (FAT32 limit)
-const String FILE_EXTENSION = "txt"; //File extension for the data file; 3 chars or less (FAT32 limit)
-const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit)
+const String FILE_NAME = "DATA"; //Filename for the data file; 8 chars or less (FAT32 limit).
+const String FILE_EXTENSION = "TXT"; //File extension for the data file; 3 chars or less (FAT32 limit).
+const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit).
 
-const uint16_t M_INTERVAL = 5000; //Time between measurements [ms]
+const uint16_t M_INTERVAL = 5000; //Time between measurements [ms].
 /* == == */
 
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
 RTC_DS3231 rtc;
 
-File dataFile; //Global variable that will hold the data file
-byte fileNum = 0; //Global number of files written
-String filePath; //This will hold the file path globally
+File dataFile; //Global variable that will hold the data file.
+byte fileNum = 0; //Global number of files written.
+String filePath; //This will hold the file path globally.
 
 /* == MCU SETUP == */
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT); //Set builtin LED to output
-  pinMode(SD_CD, INPUT_PULLUP); //Setup the uSD card detect pin
+  pinMode(LED_BUILTIN, OUTPUT); //Set builtin LED to output.
+  pinMode(SD_CD, INPUT_PULLUP); //Setup the uSD card detect pin.
   
   /* //Display some basic information on this sensor
   tsl.displaySensorDetails(); */
   
-  if(!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts
+  if(!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts.
   { while(1){ support::ledFlash(); } }
 
-  tslSetup(); //Configure the TSL2591
+  tslSetup(); //Configure the TSL2591.
   
-  filePath = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time
-  dataFile = SD.open(filePath, FILE_WRITE); //Open that one data file
+  filePath = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time.
+  dataFile = SD.open(filePath, FILE_WRITE); //Open that one data file.
   
-  support::ledFlash(); //Test LED at startup
+  support::ledFlash(); //Test LED at startup.
   
   //Serial.begin(9600); //DEBUGGING SERIAL
 }
@@ -59,51 +59,51 @@ void setup()
 /* == MAIN LOOP == */
 void loop()
 {
-  if(digitalRead(SD_CD)) //Check for physically inserted uSD card
+  if(digitalRead(SD_CD)) //Check for physically inserted uSD card.
   {
-    support::ledFlash(); //Flash to indicate a problem
+    support::ledFlash(); //Flash to indicate a problem.
     return;
   }
   
-  StaticJsonDocument<38> jsonDoc; //New static JSON doc and allocate 38 bytes (worst case)
-  JsonObject data = jsonDoc.to<JsonObject>(); //Create JSON object that will contain all the data
+  StaticJsonDocument<38> jsonDoc; //New static JSON doc and allocate 38 bytes (cover "worst" case).
+  JsonObject data = jsonDoc.to<JsonObject>(); //Create JSON object that will contain all the data.
   
-  data[F("unixtime")] = rtc.now().unixtime(); //Input current RTC unixtime
-  data[F("lux")] = measureLux(); //Input measured lux value
+  data[F("unixtime")] = rtc.now().unixtime(); //Input current RTC unixtime.
+  data[F("lux")] = measureLux(); //Input measured lux value.
 
-  auto jsonSize = measureJson(data); //Compute JSON size in byte
-  uint32_t fileSize = dataFile.size() + jsonSize; //Size of the updated save file in byte
+  auto jsonSize = measureJson(data); //Compute JSON size in byte.
+  uint32_t fileSize = dataFile.size() + jsonSize; //Size of the updated save file in byte.
     
-  //Check if the file size is bigger than the max set size; iterate until a valid file is found
+  //Check if the file size is bigger than the max set size; iterate until a valid file is found.
   while(fileSize > MAX_FILESIZE)
   {
-    dataFile.close(); //close old file
+    dataFile.close(); //Close old file.
     
-    fileNum++; //add 1 to the file number
-    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //update filename to include the file number
+    fileNum++; //Add 1 to the file number.
+    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //Update filename to include the file number.
     dataFile = SD.open(filePath, FILE_WRITE);
     
     fileSize = dataFile.size() + jsonSize;
   }
     
-  //If the data file is available write to it
+  //If the data file is available write to it.
   if(dataFile)
   {
-    serializeJson(data, dataFile); //Append the JSON data
-    dataFile.flush(); //Physically save the data, needs up to 3x the power though
+    serializeJson(data, dataFile); //Append the JSON data.
+    dataFile.flush(); //Physically save the data, needs up to 3x the power though.
   }
-  else //If no file is available flash an error
+  else //If no file is available flash an error.
   {
     support::ledFlash();
   }
   
-  support::sleep(M_INTERVAL); //Sleep until the next measurement
+  support::sleep(M_INTERVAL); //Sleep until the next measurement.
 }
 
 /* == TSL2591 SETUP == */
 void tslSetup()
 {
-  tsl.setGain(TSL2591_GAIN_MED); //TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX
+  tsl.setGain(TSL2591_GAIN_LOW); //TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX
   tsl.setTiming(TSL2591_INTEGRATIONTIME_500MS); //TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS
 }
 
@@ -111,11 +111,61 @@ void tslSetup()
 float measureLux()
 {
   uint32_t lum = tsl.getFullLuminosity();
-  uint16_t ir, full;
+  uint16_t ir, full = 0;
   
-  ir = lum >> 16;
-  full = lum & 0xFFFF;
+  while(ir, full > 58981.5 || ir, full < 6553.5) //Check near overflow or 0 (+-10%).
+  {
+    ir = lum >> 16;
+    full = lum & 0xFFFF;
+    autoRange(full);
+  }
   
   //Serial.println(lum,6);
   return tsl.calculateLux(full, ir);
+}
+
+tsl2591IntegrationTime_t timings[6] = {TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS};
+tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX};
+byte _timing = 4; //0-5
+byte _gain = 0; //0-3
+
+/* == AUTO SCALE LUX RANGE == */
+void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
+{
+  if(full < 6553.5) //Compute close to 0.
+  {
+    if(_timing < 5)
+    {
+      _timing++;
+      tsl.setTiming(timings[_timing]); //Increase Timing if possible.
+    }
+    else if(_gain < 3)
+    {
+      _gain++;
+      tsl.setGain(gains[_gain]); //Increase Gain if Timing is already max.
+    }
+    else
+    {
+      support::ledFlash(); //Something's not right here, ABORT.
+    }
+  }
+  else if(full > 58981.5) //Compute close to overflow.
+  {
+    if(_gain > 0)
+    {
+      _gain--;
+      tsl.setGain(gains[_gain]); //Decrease Gain if possible. 
+    }
+    else if(_timing > 0)
+    {
+      _timing--;
+      tsl.setTiming(timings[_timing]); //Decrease Timing if Gain is already min.
+    }
+    else
+    {
+      support::ledFlash(); //Something's not right here, ABORT.
+    }
+  }
+  
+  support::sleep(600); //Sleep 600 ms to chill the sensor.
 }
