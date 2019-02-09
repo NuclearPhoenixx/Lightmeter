@@ -6,14 +6,14 @@
 /* == LED STATUS FLASH == */
 void support::ledFlash()
 {
-  delay(600); //Delay before LED flash
+  delay(800); //Delay before LED flash
   
   for(byte i = 0; i < 3; i++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
-    delay(180);
+    delay(200);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(180);
+    delay(200);
   }
 }
 

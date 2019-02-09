@@ -16,14 +16,12 @@
 
 #define SD_CD 7 //Pin connected to the uSD card detect pin.
 #define SD_CS 4 //Pin connected to the uSD card CS pin.
-#define LED_BUILTIN 2 //Pin for the status LED.
 #define TSL2591_LUX_DF 650.0F //Lux cooefficient for calibration.
 
 /* == SETTINGS == */
 const String FILE_NAME = "DATA"; //Filename for the data file; 8 chars or less (FAT32 limit).
 const String FILE_EXTENSION = "TXT"; //File extension for the data file; 3 chars or less (FAT32 limit).
 const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit).
-
 const uint16_t M_INTERVAL = 5000; //Time between measurements [ms].
 /* == == */
 

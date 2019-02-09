@@ -5,6 +5,8 @@
 
 #include <Arduino.h>
 
+#define LED_BUILTIN 2 //Pin for the status LED.
+
 namespace support
 {
   void ledFlash();
