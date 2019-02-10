@@ -50,8 +50,6 @@ void setup()
   dataFile = SD.open(filePath, FILE_WRITE); //Open that one data file.
   
   support::ledFlash(); //Test LED at startup.
-  
-  //Serial.begin(9600); //DEBUGGING SERIAL
 }
 
 /* == MAIN LOOP == */
@@ -106,64 +104,68 @@ void tslSetup()
 }
 
 /* == TSL LUX COMPUTING == */
+uint16_t _minBit = 6553.5; //Min and max lightsensor returns. Default +-10%.
+uint16_t _maxBit = 58981.5;
+
 float measureLux()
 {
   uint32_t lum = tsl.getFullLuminosity();
   uint16_t ir, full = 0;
+  ir = lum >> 16;
+  full = lum & 0xFFFF;
   
-  while(ir, full > 58981.5 || ir, full < 6553.5) //Check near overflow or 0 (+-10%).
+  while(ir, full > _maxBit || ir, full < _minBit) //Check near overflow or 0.
   {
+    autoRange(full);
+    delay(600); //Sleep 600 ms to chill the sensor.
+    
+    lum = tsl.getFullLuminosity();
     ir = lum >> 16;
     full = lum & 0xFFFF;
-    autoRange(full);
   }
   
-  //Serial.println(lum,6);
   return tsl.calculateLux(full, ir);
 }
 
+/* == AUTO SCALE LUX RANGE == */
 tsl2591IntegrationTime_t timings[6] = {TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS};
 tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX};
 byte _timing = 4; //0-5
 byte _gain = 0; //0-3
 
-/* == AUTO SCALE LUX RANGE == */
 void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
 {
-  if(full < 6553.5) //Compute close to 0.
+  if(full < _minBit) //Compute close to 0.
   {
     if(_timing < 5)
     {
-      _timing++;
-      tsl.setTiming(timings[_timing]); //Increase Timing if possible.
+      _timing++; //Increase Timing if possible.
     }
     else if(_gain < 3)
     {
-      _gain++;
-      tsl.setGain(gains[_gain]); //Increase Gain if Timing is already max.
+      _gain++; //Increase Gain if Timing is already max.
     }
     else
     {
       support::ledFlash(); //Something's not right here, ABORT.
     }
   }
-  else if(full > 58981.5) //Compute close to overflow.
+  else if(full > _maxBit) //Compute close to overflow.
   {
     if(_gain > 0)
     {
-      _gain--;
-      tsl.setGain(gains[_gain]); //Decrease Gain if possible. 
+      _gain--; //Decrease Gain if possible.
     }
     else if(_timing > 0)
     {
-      _timing--;
-      tsl.setTiming(timings[_timing]); //Decrease Timing if Gain is already min.
+      _timing--; //Decrease Timing if Gain is already min.
     }
     else
     {
       support::ledFlash(); //Something's not right here, ABORT.
     }
   }
-  
-  support::sleep(600); //Sleep 600 ms to chill the sensor.
+
+  tsl.setGain(gains[_gain]); //Update lightsensor settings.
+  tsl.setTiming(timings[_timing]);
 }
