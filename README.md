@@ -31,7 +31,7 @@ DS3231SN RTC:
 * Years of precise timekeeping
 
 TSL2591 Ambient Light Sensor:
-* Lux Range: 188 μLux - 88,000 Lux on the fly; software scaled up to 120,000 Lux
+* Lux Range: 188 μLux - 88,000 Lux on the fly; software scaled up to 110,000 Lux
 * 600M:1 Dynamic Range
 * Separate measurements of infrared, full-spectrum or human-visible light possible
 
@@ -68,7 +68,7 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
-| Lux Range | 500 μLux - 200,000 Lux | 188 μLux - 120,000 Lux |
+| Lux Range | 500 μLux - 200,000 Lux | 188 μLux - 110,000 Lux |
 | Resolution | 50 - 100 μLux | 1000 μLux ([likely wrong](https://github.com/adafruit/Adafruit_TSL2591_Library/issues/22)) |
 | Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
 | Length x Width x Height (mm) | 92 x 92 x 15 | - |

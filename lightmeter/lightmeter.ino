@@ -38,9 +38,6 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT); //Set builtin LED to output.
   pinMode(SD_CD, INPUT_PULLUP); //Setup the uSD card detect pin.
   
-  /* //Display some basic information on this sensor
-  tsl.displaySensorDetails(); */
-  
   if(!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts.
   { while(1){ support::ledFlash(); } }
 
@@ -49,7 +46,7 @@ void setup()
   filePath = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time.
   dataFile = SD.open(filePath, FILE_WRITE); //Open that one data file.
   
-  support::ledFlash(); //Test LED at startup.
+  support::ledFlash(); //Test LED at startup and let sensor warm up.
 }
 
 /* == MAIN LOOP == */
@@ -100,12 +97,12 @@ void loop()
 void tslSetup()
 {
   tsl.setGain(TSL2591_GAIN_LOW); //TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX
-  tsl.setTiming(TSL2591_INTEGRATIONTIME_500MS); //TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS
+  tsl.setTiming(TSL2591_INTEGRATIONTIME_100MS); //TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS
 }
 
 /* == TSL LUX COMPUTING == */
-uint16_t _minBit = 6553.5; //Min and max lightsensor returns. Default +-10%.
-uint16_t _maxBit = 58981.5;
+uint16_t _minBit = 3277; //Min and max lightsensor returns. Default +-5%.
+uint16_t _maxBit = 62258;
 
 float measureLux()
 {
@@ -114,7 +111,7 @@ float measureLux()
   ir = lum >> 16;
   full = lum & 0xFFFF;
   
-  while(ir, full > _maxBit || ir, full < _minBit) //Check near overflow or 0.
+  while(full > _maxBit || full < _minBit) //Check near overflow or 0.
   {
     autoRange(full);
     delay(600); //Sleep 600 ms to chill the sensor.
@@ -130,7 +127,7 @@ float measureLux()
 /* == AUTO SCALE LUX RANGE == */
 tsl2591IntegrationTime_t timings[6] = {TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS};
 tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX};
-byte _timing = 4; //0-5
+byte _timing = 0; //0-5
 byte _gain = 0; //0-3
 
 void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
