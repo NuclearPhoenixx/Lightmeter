@@ -37,7 +37,7 @@ TSL2591 Ambient Light Sensor:
 
 ## Hardware prototype
 
-To do
+You can find the full schematic right [here](Schematic_Lightmeter_LIGHTMETER-FULL_20190422173309.pdf). You only have to work on the pcb layout for yourself and then you're ready to go. The software is designed and tested to work with this hardware prototype.
 
 ## Software features
 
@@ -47,10 +47,6 @@ To do
 * Custom maximum file size. If the size limit is reached, the system will continue to log to another file appending a number to the end of the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of too large files
 * JSON formatted data (see [data structure](https://github.com/Phoenix1747/Lightmeter#Data-and-settings))
 * LED status feedback
-
-## Preparing the Lightmeter
-
-To do: This will explain how to get started using the Arduino IDE and an ICSP programmer.
 
 ## Data and settings
 
