@@ -39,6 +39,16 @@ TSL2591 Ambient Light Sensor:
 
 You can find the full schematic right [here](Schematic_Lightmeter_LIGHTMETER-FULL_20190422173309.pdf). You only have to work on the pcb layout for yourself and then you're ready to go. The software is designed and tested to work with this hardware prototype.
 
+Important: Input voltage with the LDO regulator is as defined in the datasheet 2.3V to 6.0V. Output is fixed at 3.3V.
+
+## Flashing the software
+
+If you're using the hardware prototype and the Arduino IDE then you can flash the firmware code over the ICSP interface with a programmer like USBasp which works great for me.
+
+To flash it from inside the IDE, you need to set the board config to "`Arduino Pro or Pro Mini`" and set the processor to "`ATmega328P (3.3V, 8 MHz)`" then go to "Sketch > Upload Using Programmer" and you should be good to go.
+
+Important: Don't forget to use 3.3V with your ICSP programmer as mentioned above at "hardware prototype".
+
 ## Software features
 
 * Arbitrary time interval for measurements
