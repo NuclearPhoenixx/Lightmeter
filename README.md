@@ -4,7 +4,7 @@
 
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
-This instrument is based on a microcontroller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the uSD Card the board automatically measures the current light levels in lux and saves it together with a timestamp from an ultra-precise RTC to the uSD Card. All the data is JSON formatted and saved with as little whitespace as possible to ensure a long runtime. No other requirements.
+This instrument is based on a microcontroller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the uSD Card the board automatically measures the current light levels in lux and saves it together with a timestamp and current temperature from an ultra-precise RTC to the uSD Card. All the data is JSON formatted and saved with as little whitespace as possible to ensure a long runtime. No other requirements.
 
 This project was inspired by the Kuffner-Sternwarte Lightmeter and aims to be an easier to use all-in-one instrument. More info about the [idea](https://github.com/Phoenix1747/Lightmeter#idea) is below.
 

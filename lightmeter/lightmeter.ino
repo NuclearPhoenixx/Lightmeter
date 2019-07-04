@@ -58,11 +58,12 @@ void loop()
     return;
   }
   
-  StaticJsonDocument<38> jsonDoc; //New static JSON doc and allocate 38 bytes (cover "worst" case).
+  StaticJsonDocument<45> jsonDoc; //New static JSON doc and allocate 38 bytes (cover "worst" case).
   JsonObject data = jsonDoc.to<JsonObject>(); //Create JSON object that will contain all the data.
   
   data[F("unixtime")] = rtc.now().unixtime(); //Input current RTC unixtime.
   data[F("lux")] = measureLux(); //Input measured lux value.
+  data[F("temp")] = rtc.getTemperature(); //Input measured (RTC) temperature in °C for additional info.
 
   auto jsonSize = measureJson(data); //Compute JSON size in byte.
   uint32_t fileSize = dataFile.size() + jsonSize; //Size of the updated save file in byte.
