@@ -9,8 +9,8 @@
 
 namespace support
 {
-  void ledFlash();
-  void sleep(uint32_t sleepTime);
+void ledFlash();
+void sleep(uint32_t sleepTime);
 }
 
 #endif

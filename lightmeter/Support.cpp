@@ -7,8 +7,8 @@
 void support::ledFlash()
 {
   delay(800); //Delay before LED flash
-  
-  for(byte i = 0; i < 3; i++)
+
+  for (byte i = 0; i < 3; i++)
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
@@ -18,10 +18,10 @@ void support::ledFlash()
 }
 
 /* == ADVANCED SLEEP MODE == */
-void support::sleep(uint32_t sleepTime)
+void support::sleep(uint32_t sleep_time)
 {
-  while(sleepTime > 0)
+  while (sleep_time > 0)
   {
-    sleepTime -= Watchdog.sleep(sleepTime);
+    sleep_time -= Watchdog.sleep(sleep_time);
   }
 }
