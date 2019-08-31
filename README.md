@@ -4,7 +4,7 @@
 
 Fully autonomous instrument for measuring and logging the levels of artificial night sky brightening.
 
-This instrument is based on a microcontroller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the uSD Card the board automatically measures the current light levels in lux and saves it together with a timestamp and current temperature from an ultra-precise RTC to the uSD Card. All the data is JSON formatted and saved with as little whitespace as possible to ensure a long runtime. No other requirements.
+This instrument is based on a microcontroller, a light sensor and the data logging capabilities, all compatible with the Arduino IDE so that it is easy to update, improve & maintain. As long as there is power and space on the uSD Card the board automatically measures the current light levels in lux and saves it together with a timestamp and current temperature from an ultra-precise RTC to the uSD Card. All the data is CSV formatted and saved to ensure a long runtime. No other requirements.
 
 This project was inspired by the Kuffner-Sternwarte Lightmeter and aims to be an easier to use all-in-one instrument. More info about the [idea](https://github.com/Phoenix1747/Lightmeter#idea) is below.
 
@@ -55,12 +55,12 @@ Important: Don't forget to use 3.3V with your ICSP programmer as mentioned above
 * Can be used with any FAT32 formatted uSD card
 * Custom file name for the data log files
 * Custom maximum file size. If the size limit is reached, the system will continue to log to another file appending a number to the end of the new file name, e.g. "LOG1.TXT". This is used to not overflow the FAT32 file limit and to not crash any software because of too large files
-* JSON formatted data (see [data structure](https://github.com/Phoenix1747/Lightmeter#Data-and-settings))
+* CSV formatted data (see [data structure](https://github.com/Phoenix1747/Lightmeter#Data-and-settings))
 * LED status feedback
 
 ## Data and settings
 
-To do: Explain how the JSON data is formatted and what settings are available.
+To do: Explain how the CSV data is formatted and what settings are available.
 
 ## Comparison
 
@@ -75,13 +75,13 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
 | Lux Range | 500 μLux - 200,000 Lux | 188 μLux - 110,000 Lux |
-| Resolution | 50 - 100 μLux | 1000 μLux ([likely wrong](https://github.com/adafruit/Adafruit_TSL2591_Library/issues/22)) |
-| Measurement Rate | 1/sec - 1/hour | 1/sec - 1/month |
-| Length x Width x Height (mm) | 92 x 92 x 15 | - |
-| Weight | 370g | - |
+| Resolution | 50 - 100 μLux | 1000 μLux ([very likely wrong](https://github.com/adafruit/Adafruit_TSL2591_Library/issues/22)) |
+| Measurement Rate | 1/sec - 1/hour | 1/sec - 1/49 days |
+| Length x Width x Height (mm) | 92 x 92 x 15 | no case yet |
+| Weight | 370g | no case yet |
 | Power Input | 5V | 3.3V - 6V |
 | Max Power Consumption | 10mA + logging hardware | 5mA active + μSD active; 0.23mA standby + μSD standby |
 | Requirements | Logging hardware, e.g. Raspberry Pi, and drivers | μSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | μSD Card |
-| Data Rates (1 measurement/sec) | 3 MB/day | 3.3 MB/day |
+| Data Rates (@1 measurement/sec) | 3 MB/day | <3.3 MB/day; todo: needs to be updated |
 | Price | ~100 EUR (?) | ~50 EUR |
