@@ -1,18 +1,17 @@
 /*
- * All-in-One Arduino-compatible Luxmeter.
- * https://github.com/Phoenix1747/Lightmeter
- * 
- * THIS PROJECT IS LICENSED UNDER GPL-3.0, FEEL FREE TO USE IT
- * ACCORDING TO THE LICENSE. HAVE FUN!
- * 
- * Please note that this is still work in progress and is probably really unstable.
+   All-in-One Arduino-compatible Luxmeter.
+   https://github.com/Phoenix1747/Lightmeter
+
+   THIS PROJECT IS LICENSED UNDER GPL-3.0, FEEL FREE TO USE IT
+   ACCORDING TO THE LICENSE. HAVE FUN!
+
+   Please note that this is still work in progress and might still be unstable.
 */
 #include <SD.h>
-#include <ArduinoJson.h>
 #include <RTClib.h>
 #include <Adafruit_TSL2591.h>
 
-#include "Support.h" //All the extra needed functionality.
+#include "Support.h" //All the needed extra functionality.
 
 #define SD_CD 7 //Pin connected to the uSD card detect pin.
 #define SD_CS 4 //Pin connected to the uSD card CS pin.
@@ -20,77 +19,87 @@
 
 /* == SETTINGS == */
 const String FILE_NAME = "DATA"; //Filename for the data file; 8 chars or less (FAT32 limit).
-const String FILE_EXTENSION = "TXT"; //File extension for the data file; 3 chars or less (FAT32 limit).
+const String FILE_EXTENSION = "CSV"; //File extension for the data file; 3 chars or less (FAT32 limit).
 const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit).
-const uint16_t M_INTERVAL = 5000; //Time between measurements [ms].
+const uint32_t M_INTERVAL = 5000; //Time between measurements [ms].
+const bool MEASURE_TEMP = true; //Bool to log additional temperature info.
 /* == == */
 
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
 RTC_DS3231 rtc;
 
 File dataFile; //Global variable that will hold the data file.
-byte fileNum = 0; //Global number of files written.
-String filePath; //This will hold the file path globally.
+byte file_num = 0; //Global number of files written.
+String file_path; //This will hold the file path globally.
 
 /* == MCU SETUP == */
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT); //Set builtin LED to output.
   pinMode(SD_CD, INPUT_PULLUP); //Setup the uSD card detect pin.
-  
-  if(!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts.
-  { while(1){ support::ledFlash(); } }
+
+  if (!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts.
+  {
+    while (1) {
+      support::ledFlash();
+    }
+  }
 
   tslSetup(); //Configure the TSL2591.
-  
-  filePath = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time.
-  dataFile = SD.open(filePath, FILE_WRITE); //Open that one data file.
-  
+
+  file_path = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time.
+  dataFile = SD.open(file_path, FILE_WRITE); //Open that one data file.
+
   support::ledFlash(); //Test LED at startup and let sensor warm up.
 }
 
 /* == MAIN LOOP == */
 void loop()
 {
-  if(digitalRead(SD_CD)) //Check for physically inserted uSD card.
+  if (digitalRead(SD_CD)) //Check for physically inserted uSD card.
   {
     support::ledFlash(); //Flash to indicate a problem.
     return;
   }
-  
-  StaticJsonDocument<45> jsonDoc; //New static JSON doc and allocate 38 bytes (cover "worst" case).
-  JsonObject data = jsonDoc.to<JsonObject>(); //Create JSON object that will contain all the data.
-  
-  data[F("unixtime")] = rtc.now().unixtime(); //Input current RTC unixtime.
-  data[F("lux")] = measureLux(); //Input measured lux value.
-  data[F("temp")] = rtc.getTemperature(); //Input measured (RTC) temperature in °C for additional info.
 
-  auto jsonSize = measureJson(data); //Compute JSON size in byte.
-  uint32_t fileSize = dataFile.size() + jsonSize; //Size of the updated save file in byte.
-    
+  String data;
+
+  uint32_t timestamp = rtc.now().unixtime(); //Input current RTC unixtime.
+  float lux = measureLux(); //Input measured lux value.
+  data = String(timestamp) + "," + String(lux);
+
+  if (MEASURE_TEMP)
+  {
+    float T = rtc.getTemperature(); //Input measured (RTC) temperature in °C for additional info.
+    data += "," + String(T);
+  }
+
+  uint8_t data_size = sizeof(data); //Compute string size in bytes.
+  uint32_t file_size = dataFile.size() + data_size; //Size of the updated save file in byte.
+
   //Check if the file size is bigger than the max set size; iterate until a valid file is found.
-  while(fileSize > MAX_FILESIZE)
+  while (file_size > MAX_FILESIZE)
   {
     dataFile.close(); //Close old file.
-    
-    fileNum++; //Add 1 to the file number.
-    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //Update filename to include the file number.
-    dataFile = SD.open(filePath, FILE_WRITE);
-    
-    fileSize = dataFile.size() + jsonSize;
+
+    file_num++; //Add 1 to the file number.
+    file_path = FILE_NAME + file_num + "." + FILE_EXTENSION; //Update filename to include the file number.
+    dataFile = SD.open(file_path, FILE_WRITE);
+
+    file_size = dataFile.size() + data_size;
   }
-    
+
   //If the data file is available write to it.
-  if(dataFile)
+  if (dataFile)
   {
-    serializeJson(data, dataFile); //Append the JSON data.
+    dataFile.println(data); //Append the new data.
     dataFile.flush(); //Physically save the data, needs up to 3x the power though.
   }
   else //If no file is available flash an error.
   {
     support::ledFlash();
   }
-  
+
   support::sleep(M_INTERVAL); //Sleep until the next measurement.
 }
 
@@ -111,17 +120,17 @@ float measureLux()
   uint16_t ir, full = 0;
   ir = lum >> 16;
   full = lum & 0xFFFF;
-  
-  while(full > _maxBit || full < _minBit) //Check near overflow or 0.
+
+  while (full > _maxBit || full < _minBit) //Check near overflow or 0.
   {
     autoRange(full);
     delay(600); //Sleep 600 ms to chill the sensor.
-    
+
     lum = tsl.getFullLuminosity();
     ir = lum >> 16;
     full = lum & 0xFFFF;
   }
-  
+
   return tsl.calculateLux(full, ir);
 }
 
@@ -133,13 +142,13 @@ byte _gain = 0; //0-3
 
 void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
 {
-  if(full < _minBit) //Compute close to 0.
+  if (full < _minBit) //Compute close to 0.
   {
-    if(_timing < 5)
+    if (_timing < 5)
     {
       _timing++; //Increase Timing if possible.
     }
-    else if(_gain < 3)
+    else if (_gain < 3)
     {
       _gain++; //Increase Gain if Timing is already max.
     }
@@ -148,13 +157,13 @@ void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, i
       support::ledFlash(); //Something's not right here, ABORT.
     }
   }
-  else if(full > _maxBit) //Compute close to overflow.
+  else if (full > _maxBit) //Compute close to overflow.
   {
-    if(_gain > 0)
+    if (_gain > 0)
     {
       _gain--; //Decrease Gain if possible.
     }
-    else if(_timing > 0)
+    else if (_timing > 0)
     {
       _timing--; //Decrease Timing if Gain is already min.
     }
