@@ -1,159 +1,178 @@
 /*
-  All-in-One Arduino-compatible Lightmeter by Phoenix1747.
-  https://github.com/Phoenix1747/Lightmeter
-  
-  THIS PROJECT IS LICENSED UNDER GPL-3.0, FEEL FREE TO USE IT
-  ACCORDING TO THE LICENSE. HAVE FUN!
+   All-in-One Arduino-compatible Luxmeter.
+   https://github.com/Phoenix1747/Lightmeter
 
-  TO DO:
-  * Check what happens if the SD card space is full.
-  * Option to use date (daily) as file name.
-  * Open up settings in settings file (JSON) so that you don't need to reflash
-      the whole thing if you want to change anything.
-  * Add optional temperature logging capabilities.
-  * Create rudimentary error log on SD card.
+   THIS PROJECT IS LICENSED UNDER GPL-3.0, FEEL FREE TO USE IT
+   ACCORDING TO THE LICENSE. HAVE FUN!
+
+   Please note that this is still work in progress and might still be unstable.
 */
-#include <SD.h> //SD Card
-#include <ArduinoJson.h> //For JSON data formatting
-#include <RTClib.h> //DS3231 library
+#include <SD.h>
+#include <RTClib.h>
+#include <Adafruit_TSL2591.h>
 
-#include "LIGHTSENSOR.h" //My TSL2591 stuff
-#include "EXTRA.h" //All the extra functions
+#include "Support.h" //All the needed extra functionality.
 
-#define SD_CD 7 //pin connected to the uSD card detect pin
-#define SD_CS 4 //pin connected to the uSD card CS pin
-#define LED_BUILTIN 2 //pin for the LED
+#define SD_CD 7 //Pin connected to the uSD card detect pin.
+#define SD_CS 4 //Pin connected to the uSD card CS pin.
+#define TSL2591_LUX_DF 650.0F //Lux cooefficient for calibration.
 
-/* ===================
- *  BEGIN USER CONFIG
-*/
-const String FILE_NAME = "data"; //filename for the data file; 8 chars or less!
-const String FILE_EXTENSION = "txt"; //file extension for the data file; 3 chars or less!
-const uint32_t MAX_FILESIZE = 500000000; //max filesize in byte, here it's 500MB (NOTE FAT32 SIZE LIMIT!)
+/* == SETTINGS == */
+const String FILE_NAME = "DATA"; //Filename for the data file; 8 chars or less (FAT32 limit).
+const String FILE_EXTENSION = "CSV"; //File extension for the data file; 3 chars or less (FAT32 limit).
+const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit).
+const uint32_t M_INTERVAL = 5000; //Time between measurements [ms].
+const bool MEASURE_TEMP = true; //Bool to log additional temperature info.
+/* == == */
 
-const uint16_t M_INTERVAL = 5000; //time between single measurements, in ms
-const byte MAX_TRIES = 5; //max number of re-tries after an invalid measurement before just continuing
+Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
+RTC_DS3231 rtc;
 
-const bool EN_LIMIT = true; //enable upper lux limit to reduce the amount of data written
-const uint32_t LUX_LIMIT = 100; //if EN_LIMIT is true, this is the upper limit the lightmeter stops recording, in lx
-/*  END USER CONFIG
- * ===================
-*/
+File dataFile; //Global variable that will hold the data file.
+byte file_num = 0; //Global number of files written.
+String file_path; //This will hold the file path globally.
 
-TSL2591 lightsensor = TSL2591(1, 2, MAX_TRIES); //create lightsensor object
-RTC_DS3231 rtc; //create rtc object
-
-File dataFile; //global variable that will hold the data file
-byte fileNum = 0; //global number of file
-String filePath; //this will hold the file path globally
-
-/* ARDUINO SETUP FUNCTION */
+/* == MCU SETUP == */
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT); //set builtin LED to output
-  pinMode(SD_CD, INPUT_PULLUP); //setup the uSD card detect pin
-  
-  /* Display some basic information on this sensor
-  lightsensor.displaySensorDetails(); */
-  
-  // INIT TSL2591 IF PRESENT
-  if(!lightsensor.begin())
+  pinMode(LED_BUILTIN, OUTPUT); //Set builtin LED to output.
+  pinMode(SD_CD, INPUT_PULLUP); //Setup the uSD card detect pin.
+
+  if (!tsl.begin() || !SD.begin(SD_CS) || !rtc.begin() || rtc.lostPower()) //Initialize all the parts.
   {
-    while(1)
-    {
-      extra::led_flash();
-    }
-  }
-  
-  // INIT SD CARD IF PRESENT
-  if(!SD.begin(SD_CS))
-  {
-    while(1)
-    {
-      extra::led_flash();
+    while (1) {
+      support::ledFlash();
     }
   }
 
-  //INIT RTC
-  if(!rtc.begin())
-  {
-    while(1)
-    {
-      extra::led_flash();
-    }
-  }
-  
-  //CHECK IF RTC LOST POWER AND TIME IS INVALID
-  if(rtc.lostPower())
-  {
-    while(1)
-    {
-      extra::led_flash();
-    }
-  }
-  
-  //update filePath to point to file_name.file_extenion.
-  filePath = FILE_NAME + "." + FILE_EXTENSION;
-  dataFile = SD.open(filePath, FILE_WRITE); // open the data file, only one file at a time!
-  
-  //FLASH LED AT STARTUP TO TEST IT
-  extra::led_flash();
+  tslSetup(); //Configure the TSL2591.
 
-  //Serial.begin(9600); //DEBUGGING SERIAL
+  file_path = FILE_NAME + "." + FILE_EXTENSION; //Setup the file path for the first time.
+  dataFile = SD.open(file_path, FILE_WRITE); //Open that one data file.
+
+  support::ledFlash(); //Test LED at startup and let sensor warm up.
 }
 
-/* MAIN LOOP */
+/* == MAIN LOOP == */
 void loop()
 {
-  extra::sleep(M_INTERVAL); //enable sleep mode for the time interval between measurements
-  
-  if(digitalRead(SD_CD)) //if there is physically no card inserted return
+  if (digitalRead(SD_CD)) //Check for physically inserted uSD card.
   {
-    extra::led_flash(); //flash no SD card error once
+    support::ledFlash(); //Flash to indicate a problem.
     return;
   }
-  
-  float lux = lightsensor.luxRead(); //get lux values
 
-  if(EN_LIMIT && lux >= LUX_LIMIT)
+  String data;
+
+  uint32_t timestamp = rtc.now().unixtime(); //Input current RTC unixtime.
+  float lux = measureLux(); //Input measured lux value.
+  data = String(timestamp) + "," + String(lux);
+
+  if (MEASURE_TEMP)
   {
-    return; //if lux limit enabled and lux value under threshold then just return
+    float T = rtc.getTemperature(); //Input measured (RTC) temperature in °C for additional info.
+    data += "," + String(T);
   }
 
-  uint32_t timestamp = rtc.now().unixtime(); //get latest unix timestamp
-  
-  //Serial.println(lux,6); //DEBUG LUX FOR CALIBRATION
-  
-  // new static (faster than dynamic) json document and allocate 40 bytes (worst case)
-  StaticJsonDocument<40> jsonDoc;
-    
-  // create new json object that will contain all the logged data
-  JsonObject data = jsonDoc.to<JsonObject>();
-  
-  data[F("unixtime")] = timestamp; //input current RTC unixtime
-  data[F("lux")] = lux; //input lux value
-    
-  //to-be/future size of file with the new data in bytes
-  uint32_t future_size = dataFile.size() + measureJson(data);
-    
-  //check if future_size is bigger than specified max size, iterate until a valid file is opened
-  while(future_size > MAX_FILESIZE)
+  uint8_t data_size = sizeof(data); //Compute string size in bytes.
+  uint32_t file_size = dataFile.size() + data_size; //Size of the updated save file in byte.
+
+  //Check if the file size is bigger than the max set size; iterate until a valid file is found.
+  while (file_size > MAX_FILESIZE)
   {
-    fileNum++; //add 1 to the file number
-    filePath = FILE_NAME + fileNum + "." + FILE_EXTENSION; //update filename to include the file number
-    dataFile = SD.open(filePath, FILE_WRITE);
-    future_size = dataFile.size() + measureJson(data);
+    dataFile.close(); //Close old file.
+
+    file_num++; //Add 1 to the file number.
+    file_path = FILE_NAME + file_num + "." + FILE_EXTENSION; //Update filename to include the file number.
+    dataFile = SD.open(file_path, FILE_WRITE);
+
+    file_size = dataFile.size() + data_size;
   }
-    
-  //if the data file is available, write the data to it
-  if(dataFile)
+
+  //If the data file is available write to it.
+  if (dataFile)
   {
-    serializeJson(data, dataFile); //append the compact data to the file
-    dataFile.flush(); //physically save the data to the file, needs up to 3x the power though
+    dataFile.println(data); //Append the new data.
+    dataFile.flush(); //Physically save the data, needs up to 3x the power though.
   }
-  else //if the file is not available, flash an error
+  else //If no file is available flash an error.
   {
-    extra::led_flash();
+    support::ledFlash();
   }
+
+  support::sleep(M_INTERVAL); //Sleep until the next measurement.
 }
 
+/* == TSL2591 SETUP == */
+void tslSetup()
+{
+  tsl.setGain(TSL2591_GAIN_LOW); //TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX
+  tsl.setTiming(TSL2591_INTEGRATIONTIME_100MS); //TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS
+}
+
+/* == TSL LUX COMPUTING == */
+uint16_t _minBit = 3277; //Min and max lightsensor returns. Default +-5%.
+uint16_t _maxBit = 62258;
+
+float measureLux()
+{
+  uint32_t lum = tsl.getFullLuminosity();
+  uint16_t ir, full = 0;
+  ir = lum >> 16;
+  full = lum & 0xFFFF;
+
+  while (full > _maxBit || full < _minBit) //Check near overflow or 0.
+  {
+    autoRange(full);
+    delay(600); //Sleep 600 ms to chill the sensor.
+
+    lum = tsl.getFullLuminosity();
+    ir = lum >> 16;
+    full = lum & 0xFFFF;
+  }
+
+  return tsl.calculateLux(full, ir);
+}
+
+/* == AUTO SCALE LUX RANGE == */
+tsl2591IntegrationTime_t timings[6] = {TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS};
+tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX};
+byte _timing = 0; //0-5
+byte _gain = 0; //0-3
+
+void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
+{
+  if (full < _minBit) //Compute close to 0.
+  {
+    if (_timing < 5)
+    {
+      _timing++; //Increase Timing if possible.
+    }
+    else if (_gain < 3)
+    {
+      _gain++; //Increase Gain if Timing is already max.
+    }
+    else
+    {
+      support::ledFlash(); //Something's not right here, ABORT.
+    }
+  }
+  else if (full > _maxBit) //Compute close to overflow.
+  {
+    if (_gain > 0)
+    {
+      _gain--; //Decrease Gain if possible.
+    }
+    else if (_timing > 0)
+    {
+      _timing--; //Decrease Timing if Gain is already min.
+    }
+    else
+    {
+      support::ledFlash(); //Something's not right here, ABORT.
+    }
+  }
+
+  tsl.setGain(gains[_gain]); //Update lightsensor settings.
+  tsl.setTiming(timings[_timing]);
+}
