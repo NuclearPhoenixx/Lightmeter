@@ -80,8 +80,8 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 | Length x Width x Height (mm) | 92 x 92 x 15 | no case yet |
 | Weight | 370g | no case yet |
 | Power Input | 5V | 3.3V - 6V |
-| Max Power Consumption | 10mA + logging hardware | 5mA active + μSD active; 0.23mA standby + μSD standby |
+| Max Power Consumption | 10mA + logging hardware | 4.5mA active + μSD active; 0.22mA standby + μSD standby |
 | Requirements | Logging hardware, e.g. Raspberry Pi, and drivers | μSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | μSD Card |
-| Data Rates (@1 measurement/sec) | 3 MB/day | <3.3 MB/day; todo: needs to be updated |
+| Data Rates (@1 measurement/sec) | 3 MB/day | 2.1 MB/day |
 | Price | ~100 EUR (?) | ~50 EUR |
