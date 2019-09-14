@@ -8,6 +8,10 @@ This instrument is based on a microcontroller, a light sensor and the data loggi
 
 This project was inspired by the Kuffner-Sternwarte Lightmeter and aims to be an easier to use all-in-one instrument. More info about the [idea](https://github.com/Phoenix1747/Lightmeter#idea) is below.
 
+More resources regarding the original Kuffner-Sternwarte Lightmeter can be found here:
+- [Monitoring Night-Sky Brightness with a Lightmeter Network, G. Wuchterl, talk at 2009 European Symposium for the protection of the night skies](http://hms.sternhell.at/lightwiki/images/f/fe/Lightmeter_Network_Armagh.pdf)
+- [Lightmeter performance and calibraton in the Atacama](http://hms.sternhell.at/lightwiki/images/7/77/Mueller_lightmeter_site-testing2010.pdf)
+
 ## Idea
 
 The idea for this project came from my friends at the [Kuffner Sternwarte](http://kuffner-sternwarte.at), their well-known [Lightmeter](http://hms.sternhell.at/lightwiki) and their campaign against light pollution and the ongoing disappearence of our beautiful nightsky. As just mentioned they developed their own little light sensor board, initially for the International Year of Astronomy 2009, and have since then made extensive measurements of the light levels in Europe (and Japan) with the support of universities and other observatories.
