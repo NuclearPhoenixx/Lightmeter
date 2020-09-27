@@ -47,9 +47,9 @@ Important: Input voltage with the LDO regulator is as defined in the datasheet 2
 
 ## Flashing the software
 
-If you're using the hardware prototype and the Arduino IDE then you can flash the firmware code over the ICSP interface with a programmer like USBasp which works great for me.
+If you're using the hardware prototype and the Arduino IDE then you can flash the firmware code over the ICSP interface with a programmer like [USBasp](https://www.fischl.de/usbasp/) which works great for me.
 
-To flash it from inside the IDE, you need to set the board config to "`Arduino Pro or Pro Mini`" and set the processor to "`ATmega328P (3.3V, 8 MHz)`" then go to "Sketch > Upload Using Programmer" and you should be good to go.
+To flash it from inside the IDE, you need to set the board config to "`Arduino Pro or Pro Mini`" and set the processor to "`ATmega328P (3.3V, 8 MHz)`" then go to "Sketch > Upload Using Programmer" and you should be good to go. Just check for the right orientation of the ICSP header.
 
 Important: Don't forget to use 3.3V with your ICSP programmer as mentioned above at "hardware prototype".
 
@@ -64,7 +64,19 @@ Important: Don't forget to use 3.3V with your ICSP programmer as mentioned above
 
 ## Data and settings
 
-To do: Explain how the CSV data is formatted and what settings are available.
+If you open the Arduino project you will see a section of the code is settings, these should pretty much all be self-explanatory:
+
+```cpp
+/* == SETTINGS == */
+const String FILE_NAME = "DATA"; //Filename for the data file; 8 chars or less (FAT32 limit).
+const String FILE_EXTENSION = "CSV"; //File extension for the data file; 3 chars or less (FAT32 limit).
+const uint32_t MAX_FILESIZE = 4000000000; //Max filesize in bytes; defaults 4GB (FAT32 size limit).
+const uint32_t M_INTERVAL = 5000; //Time between measurements [ms].
+const bool MEASURE_TEMP = true; //Bool to log additional temperature info.
+/* == == */
+```
+
+The measured data will be saved into a csv file named according `FILE_NAME`. If the file exceeds the `MAX_FILESIZE` then it will append a number to the end of the (file)name and continue recording. Eventually the software will create another new file and increment the number and so on and on.
 
 ## Comparison
 
