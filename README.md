@@ -78,6 +78,18 @@ const bool MEASURE_TEMP = true; //Bool to log additional temperature info.
 
 The measured data will be saved into a csv file named according `FILE_NAME`. If the file exceeds the `MAX_FILESIZE` then it will append a number to the end of the (file)name and continue recording. Eventually the software will create another new file and increment the number and so on and on.
 
+The formatted csv string looks like that:
+
+```
+timestamp,luxvalue
+```
+
+If you decide to (optionally) record the temperature as well you will get this:
+
+```
+timestamp,luxvalue,temperature
+```
+
 ## Comparison
 
 I try to compare it as objectively as possible, but please bear in mind that this is never fully possible. If I forgot something important, please let me know and write an issue or pull request!
