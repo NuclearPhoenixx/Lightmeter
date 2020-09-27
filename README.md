@@ -41,7 +41,7 @@ TSL2591 Ambient Light Sensor:
 
 ## Hardware prototype
 
-You can find the full schematic right [here](Schematic_Lightmeter_LIGHTMETER-FULL_20190422173309.pdf). You only have to work on the pcb layout for yourself and then you're ready to go. The software is designed and tested to work with this hardware prototype.
+You can find the full schematic right [here](schematic_lightmeter.pdf). You only have to work on the pcb layout for yourself and then you're ready to go. The software is designed and tested to work with this hardware prototype.
 
 Important: Input voltage with the LDO regulator is as defined in the datasheet 2.3V to 6.0V. Output is fixed at 3.3V.
 
