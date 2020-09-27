@@ -102,13 +102,13 @@ Please note that fields with a `-` do not apply to the prototype yet and will be
 
 | Stat | Kuffner Lightmeter | Phoenix's Lightmeter |
 | --- | --- | --- |
-| Lux Range | 500 μLux - 200,000 Lux | 188 μLux - 110,000 Lux |
+| Lux Range | 500 μLux - 200,000 Lux | 188 μLux - 110,000 Lux (probably not as accurate) |
 | Resolution | 50 - 100 μLux | 1000 μLux ([very likely wrong](https://github.com/adafruit/Adafruit_TSL2591_Library/issues/22)) |
 | Measurement Rate | 1/sec - 1/hour | 1/sec - 1/49 days |
-| Length x Width x Height (mm) | 92 x 92 x 15 | no case yet |
-| Weight | 370g | no case yet |
-| Power Input | 5V | 3.3V - 6V |
-| Max Power Consumption | 10mA + logging hardware | 4.5mA active + μSD active; 0.22mA standby + μSD standby |
+| Length x Width x Height (mm) | 92 x 92 x 15 | no case |
+| Weight | 370g | no case |
+| Input Voltage Range | 5V | 3.3V - 6V |
+| Max Power Consumption | 10mA + logging hardware @5V | 4.5mA active + μSD active; 0.22mA standby + μSD standby @5V |
 | Requirements | Logging hardware, e.g. Raspberry Pi, and drivers | μSD Card, CR1220 Battery |
 | Data Destination | Logging hardware | μSD Card |
 | Data Rates (@1 measurement/sec) | 3 MB/day | 2.1 MB/day |
