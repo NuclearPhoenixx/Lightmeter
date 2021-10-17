@@ -122,7 +122,7 @@ float measureLux()
   while (full > _maxBit || full < _minBit) // Check near overflow or 0.
   {
     autoRange(full);
-    delay(600); // Sleep 600 ms to chill the sensor.
+    delay(800); // Sleep 600 ms to chill the sensor.
 
     lum = tsl.getFullLuminosity();
     ir = lum >> 16;
