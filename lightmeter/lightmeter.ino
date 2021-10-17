@@ -23,7 +23,7 @@ const uint32_t M_INTERVAL = 5000; // Time between measurements [ms].
 const bool MEASURE_TEMP = true; // Bool to log additional temperature info.
 /* == == */
 
-Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591);
+Adafruit_TSL2591 tsl(2591);
 RTC_DS3231 rtc;
 
 File dataFile; // Global variable that will hold the data file.
@@ -122,7 +122,7 @@ float measureLux()
   while (full > _maxBit || full < _minBit) // Check near overflow or 0.
   {
     autoRange(full);
-    delay(800); // Sleep 600 ms to chill the sensor.
+    delay(800); // Sleep 800 ms to chill the sensor.
 
     lum = tsl.getFullLuminosity();
     ir = lum >> 16;
