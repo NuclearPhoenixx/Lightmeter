@@ -140,9 +140,9 @@ tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH,
 byte _timing = 0; //0-5
 byte _gain = 0; //0-3
 
-void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, it's *ugly*!
+void autoRange(uint16_t value) //Suggestions for this part greatly appreciated, it's *ugly*!
 {
-  if (full < _minBit) //Compute close to 0.
+  if (value < _minBit) //Compute close to 0.
   {
     if (_timing < 5)
     {
@@ -157,7 +157,7 @@ void autoRange(uint16_t full) //Suggestions for this part greatly appreciated, i
       support::ledFlash(); //Something's not right here, ABORT.
     }
   }
-  else if (full > _maxBit) //Compute close to overflow.
+  else if (value > _maxBit) //Compute close to overflow.
   {
     if (_gain > 0)
     {
