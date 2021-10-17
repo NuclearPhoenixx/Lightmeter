@@ -109,8 +109,8 @@ void tslSetup()
 }
 
 /* == TSL LUX COMPUTING == */
-uint16_t _minBit = 3277; // Min and max lightsensor returns. Default +-5%.
-uint16_t _maxBit = 62258;
+uint16_t _minBit = 65536 * 0.1; // Min and max lightsensor returns. Default +-10%.
+uint16_t _maxBit = 65536 * 0.9;
 
 float measureLux()
 {
