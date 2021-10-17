@@ -133,22 +133,17 @@ float measureLux()
 }
 
 /* == AUTO SCALE LUX RANGE == */
-tsl2591IntegrationTime_t timings[6] = {TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS, TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS, TSL2591_INTEGRATIONTIME_500MS, TSL2591_INTEGRATIONTIME_600MS};
-tsl2591Gain_t gains[4] = {TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH, TSL2591_GAIN_MAX};
-byte _timing = 0; //0-5
-byte _gain = 0; //0-3
-
 void autoRange(uint16_t value) // Suggestions for this part greatly appreciated, it's *ugly*!
 {
   if (value < _minBit) // Compute close to 0.
   {
-    if (_timing < 5)
+    if (tsl.getTiming() < 5)
     {
-      _timing++; // Increase Timing if possible.
+      tsl.setTiming(tsl2591IntegrationTime_t(tsl.getTiming() + 1)); // Increase Timing if possible.
     }
-    else if (_gain < 3)
+    else if (tsl.getGain() < 3)
     {
-      _gain++; // Increase Gain if Timing is already max.
+      tsl.setGain(tsl2591Gain_t(tsl.getGain() + 1)); // Increase Gain if Timing is already max.
     }
     else
     {
@@ -157,20 +152,17 @@ void autoRange(uint16_t value) // Suggestions for this part greatly appreciated,
   }
   else if (value > _maxBit) // Compute close to overflow.
   {
-    if (_gain > 0)
+    if (tsl.getGain() > 0)
     {
-      _gain--; // Decrease Gain if possible.
+      tsl.setGain(tsl2591Gain_t(tsl.getGain() - 1)); // Decrease Gain if possible.
     }
-    else if (_timing > 0)
+    else if (tsl.getTiming() > 0)
     {
-      _timing--; // Decrease Timing if Gain is already min.
+      tsl.setTiming(tsl2591IntegrationTime_t(tsl.getTiming() - 1)); // Decrease Timing if Gain is already min.
     }
     else
     {
       support::ledFlash(); // Something's not right here, ABORT.
     }
   }
-
-  tsl.setGain(gains[_gain]); // Update lightsensor settings.
-  tsl.setTiming(timings[_timing]);
 }
